@@ -165,43 +165,44 @@ typedef enum
 class NAU7802 : public Sensor<float>
 {
 public:
-  NAU7802(){
+  NAU7802()
+  {
     _pack_bytes = 4;
-  }                                               //Default constructor
+  }                                                        //Default constructor
   bool begin(TwoWire &wirePort = Wire, bool reset = true); //Check communication and initialize sensor
   bool isConnected();                                      //Returns true if device acks at the I2C address
 
-  bool available();                          //Returns true if Cycle Ready bit is set (conversion is complete)
-  int32_t getReading()                      //Returns 24-bit reading. Assumes CR Cycle Ready bit (ADC conversion complete) has been checked by .available()
-{
-  _i2cPort->beginTransmission(_deviceAddress);
-  _i2cPort->write(NAU7802_ADCO_B2);
-  if (_i2cPort->endTransmission() != 0)
-    return (false); //Sensor did not ACK
-
-  _i2cPort->requestFrom((uint8_t)_deviceAddress, (uint8_t)3);
-
-  if (_i2cPort->available())
+  bool available();    //Returns true if Cycle Ready bit is set (conversion is complete)
+  int32_t getReading() //Returns 24-bit reading. Assumes CR Cycle Ready bit (ADC conversion complete) has been checked by .available()
   {
-    uint32_t valueRaw = (uint32_t)_i2cPort->read() << 16; //MSB
-    valueRaw |= (uint32_t)_i2cPort->read() << 8;          //MidSB
-    valueRaw |= (uint32_t)_i2cPort->read();               //LSB
+    _i2cPort->beginTransmission(_deviceAddress);
+    _i2cPort->write(NAU7802_ADCO_B2);
+    if (_i2cPort->endTransmission() != 0)
+      return (false); //Sensor did not ACK
 
-    // the raw value coming from the ADC is a 24-bit number, so the sign bit now
-    // resides on bit 23 (0 is LSB) of the uint32_t container. By shifting the
-    // value to the left, I move the sign bit to the MSB of the uint32_t container.
-    // By casting to a signed int32_t container I now have properly recovered
-    // the sign of the original value
-    int32_t valueShifted = (int32_t)(valueRaw << 8);
+    _i2cPort->requestFrom((uint8_t)_deviceAddress, (uint8_t)3);
 
-    // shift the number back right to recover its intended magnitude
-    int32_t value = (valueShifted >> 8);
+    if (_i2cPort->available())
+    {
+      uint32_t valueRaw = (uint32_t)_i2cPort->read() << 16; //MSB
+      valueRaw |= (uint32_t)_i2cPort->read() << 8;          //MidSB
+      valueRaw |= (uint32_t)_i2cPort->read();               //LSB
 
-    return (value);
+      // the raw value coming from the ADC is a 24-bit number, so the sign bit now
+      // resides on bit 23 (0 is LSB) of the uint32_t container. By shifting the
+      // value to the left, I move the sign bit to the MSB of the uint32_t container.
+      // By casting to a signed int32_t container I now have properly recovered
+      // the sign of the original value
+      int32_t valueShifted = (int32_t)(valueRaw << 8);
+
+      // shift the number back right to recover its intended magnitude
+      int32_t value = (valueShifted >> 8);
+
+      return (value);
+    }
+
+    return (0); //Error
   }
-
-  return (0); //Error
-}
   int32_t getAverage(uint8_t samplesToTake); //Return the average of a given number of readings
 
   void calculateZeroOffset(uint8_t averageAmount = 8); //Also called taring. Call this with nothing on the scale
@@ -241,18 +242,25 @@ public:
   uint8_t getRegister(uint8_t registerAddress);             //Get contents of a register
   bool setRegister(uint8_t registerAddress, uint8_t value); //Send a given value to be written to given address. Return true if successful
 
-  const float& get_data() {
-    if(_type == ACTIVE){
-      _data = this->getWeight();
+  const float &get_data()
+  {
+    if (_type == ACTIVE)
+    {
+      if (this->available())
+      {
+        _data = this->getWeight();
+      }
     }
     return _data;
   }
 
-  void pack(byte* pack){
-    *((float*)pack) = get_data();
+  void pack(byte *pack)
+  {
+    *((float *)pack) = get_data();
   }
-  void unpack(const byte* pack){
-    _data = *((float*)pack);
+  void unpack(const byte *pack)
+  {
+    _data = *((float *)pack);
   }
 
 private:
