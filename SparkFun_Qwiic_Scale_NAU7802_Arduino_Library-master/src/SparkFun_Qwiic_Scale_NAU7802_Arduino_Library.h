@@ -248,7 +248,7 @@ public:
     {
       if (this->available())
       {
-        _data = this->getWeight();
+        _data = this->getWeight(true, 1);
       }
     }
     return _data;
