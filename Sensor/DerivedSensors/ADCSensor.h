@@ -6,14 +6,14 @@
 
 class adc_data_t {
 public:
-	const int16_t& operator[](uint8_t i) const { 
+	const float& operator[](uint8_t i) const { 
 		return _data[i];
 	}
-	int16_t& operator[](uint8_t i) {
+	float& operator[](uint8_t i) {
 		return _data[i];
 	}
 private:
-	int16_t _data[4];
+	float _data[4];
 };
 
 class ADCSensor : public Sensor<adc_data_t> {
@@ -28,21 +28,22 @@ public:
 
 	const adc_data_t& get_data(){
 		if(_type == ACTIVE){
-			_data[0] = _ads.readADC_SingleEnded(0);
-			_data[1] = _ads.readADC_SingleEnded(1);
-			_data[2] = _ads.readADC_SingleEnded(2);
-			_data[3] = _ads.readADC_SingleEnded(3);
+			_data[0] = _ads.computeVolts(_ads.readADC_SingleEnded(0));
+			_data[1] = _ads.computeVolts(_ads.readADC_SingleEnded(1));
+			_data[2] = _ads.computeVolts(_ads.readADC_SingleEnded(2));
+			_data[3] = _ads.computeVolts(_ads.readADC_SingleEnded(3));
 		}
 		return _data;
 	} 
 	void pack(uint8_t* pack){
-		int16_t* p = (int16_t*) pack;
-		const int16_t* data = &(_data[0]);
+        this->get_data();
+		float* p = (float*) pack;
+		const float* data = &(_data[0]);
 		memcpy(p, data, sizeof(_data));
 	}
 	void unpack(uint8_t* pack){
-		const int16_t* p = (int16_t*) pack;
-		int16_t* data = &(_data[0]);
+		const float* p = (float*) pack;
+		float* data = &(_data[0]);
 		memcpy(data, p, sizeof(_data));
 	}
 

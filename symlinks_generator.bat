@@ -5,3 +5,5 @@
     set exclude=
 
     forfiles /P "%source%" /C "cmd /c if @isdir==TRUE ( mklink /d \"%target%\@file\" @path )"
+
+cmd /k
