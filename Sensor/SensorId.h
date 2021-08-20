@@ -21,6 +21,7 @@ enum sensor_id_t : uint16_t
 	DEFAULT_NO_SENSOR               = 0,	//NumBytes: 0
 	FLAG_DATACOLLECTING             = 1,	//NumBytes: 1
 	COMMAND_SDCARDFILENAMESTRING    = 2,	//NumBytes: 12
+	COMMAND_TOGGLE_TEENSY_LED       = 3,	//NumBytes: 1
 	TEST_SENSOR_0                   = 90,	//NumBytes: 4
 	TEST_SENSOR_1                   = 91,	//NumBytes: 4
 	TEST_SENSOR_2                   = 92,	//NumBytes: 4
@@ -87,9 +88,9 @@ enum sensor_id_t : uint16_t
 	PRESSURE_FRONTBRAKE_PSI         = 304,	//NumBytes: 2
 	PRESSURE_REARBRAKE_PSI          = 305,	//NumBytes: 2
 	FORCE_DYNO_LBS                  = 306,	//NumBytes: 4
-	WHEEL_FORCE_TRANSDUCER_ANALOG_1 = 307,	//NumBytes: [2, 2, 2, 2] - FX, FY, FZ, MX
-	WHEEL_FORCE_TRANSDUCER_ANALOG_2 = 308,	//NumBytes: [2, 2, 2, 2] - MY, MZ, Vel, Pos
-	WHEEL_FORCE_TRANSDUCER_ANALOG_3 = 309,	//NumBytes: [2, 2] - AccelX, AccelY
+	WHEEL_FORCE_TRANSDUCER_ANALOG_1 = 307,	//NumBytes: [4, 4, 4, 4] - FX, FY, FZ, MX
+	WHEEL_FORCE_TRANSDUCER_ANALOG_2 = 308,	//NumBytes: [4, 4, 4, 4] - MY, MZ, Vel, Pos
+	WHEEL_FORCE_TRANSDUCER_ANALOG_3 = 309,	//NumBytes: [4, 4, 4, 4] - AccelX, AccelY
 
     /**
      * 400 - LDS SENSORS

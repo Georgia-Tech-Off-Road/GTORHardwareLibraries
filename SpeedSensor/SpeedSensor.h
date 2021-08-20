@@ -38,6 +38,7 @@
 #include "Arduino.h"
 #include "utility/direct_pin_read.h"
 #include <Sensor.h>
+#include <cmath>
 
 #if defined(ENCODER_USE_INTERRUPTS) || !defined(ENCODER_DO_NOT_USE_INTERRUPTS)
 #define ENCODER_USE_INTERRUPTS
@@ -47,17 +48,8 @@
 #define ENCODER_ARGLIST_SIZE 0
 #endif
 
-// Will average data points over a a certain amount of time (or all the data
-// point, whichever is lesser). Will average over a minimum of two data points
-#define NUM_MEASUREMENTS 100
-#define TIME_AVERAGING 100000 //microseconds
 
-
-
-// All the data needed by interrupts is consolidated into this ugly struct
-// to facilitate assembly language optimizing of the speed critical update.
-// The assembly code uses auto-incrementing addressing modes, so the struct
-// must remain in exactly this order.
+// Struct for storing the encoder state
 typedef struct {
 	volatile IO_REG_TYPE * pin1_register;
 	volatile IO_REG_TYPE * pin2_register;
@@ -65,8 +57,12 @@ typedef struct {
 	IO_REG_TYPE            pin2_bitmask;
 	uint8_t                state;
 	int32_t                position;
-    uint32_t             * times;
-    uint8_t                time_pos;
+    uint16_t               speed;
+    uint16_t               ppr;
+    uint32_t               prev_update_time;
+    uint32_t               prev_tick_time;
+    uint32_t               update_interval;
+    uint32_t               num_ticks;
 } Encoder_internal_state_t;
 
 typedef struct {
@@ -79,15 +75,18 @@ class SpeedSensor : public Sensor<speed_sensor_data_t>
 public:
     // Set pin2 to 255 if it is not used
 	SpeedSensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255) {
-        _ppr = ppr;
+        _encoder.ppr = ppr;
         _pack_bytes = 6;
+        _encoder.prev_update_time = micros();
+        _encoder.prev_tick_time = micros();
+        _encoder.update_interval = 500000 / sqrt(ppr);
+        _encoder.num_ticks = 1;
 
         pinMode(pin1, INPUT_PULLUP);
         _encoder.pin1_register = PIN_TO_BASEREG(pin1);
 		_encoder.pin1_bitmask = PIN_TO_BITMASK(pin1);
         _encoder.position = 0;
-        _encoder.times = new uint32_t [NUM_MEASUREMENTS];
-        _encoder.time_pos = 0;
+        _encoder.speed = 0;
         // allow time for a passive R-C filter to charge
 		// through the pullup resistors, before reading
 		// the initial state
@@ -131,30 +130,12 @@ public:
         noInterrupts();
         uint16_t rpm = 0;
         
-        uint32_t time_deltas[NUM_MEASUREMENTS - 1]; // With 10 measurements there are 9 deltas to be calculated
-        uint32_t curr_time_delta;
-
-        // find all of the time deltas
-        // TODO: handle the case where the time has wrapped
-        uint8_t delta_pos = 0;
-        for (uint8_t i = _encoder.time_pos; i < _encoder.time_pos + NUM_MEASUREMENTS - 1; i++) {
-            time_deltas[delta_pos] = _encoder.times[(i+2)%NUM_MEASUREMENTS] - _encoder.times[(i+1)%NUM_MEASUREMENTS];
-            delta_pos++;
-        }
-        curr_time_delta = micros() - _encoder.times[_encoder.time_pos];
-
-        uint32_t sum = 0;
-        uint8_t i = 0;
-        // average the numbers summed
-        while ((i < NUM_MEASUREMENTS && sum < TIME_AVERAGING) || i < 2){
-            sum += time_deltas[i];
-            i++;
-        }
         // If measurement hasn't been taken in a while, assume it is slowing down
-        if (curr_time_delta > time_deltas[0] && curr_time_delta > time_deltas[1]){
-            rpm = 60*1000*1000/(curr_time_delta)/_ppr;
-        } else {
-            rpm = 60*1000*1000/(sum/i)/_ppr;
+        if ((60*1000*1000 / abs(micros() - _encoder.prev_tick_time) / _encoder.ppr) * 1.2 < _encoder.speed){
+            rpm = 60*1000*1000 / abs(micros() - _encoder.prev_tick_time) / _encoder.ppr;
+        }
+        else {
+            rpm = _encoder.speed;
         }
 
         interrupts();
@@ -180,7 +161,6 @@ public:
 
 private:
 	Encoder_internal_state_t _encoder;
-    uint16_t _ppr;
 
 public:
 	static Encoder_internal_state_t * interruptArgs[ENCODER_ARGLIST_SIZE];
@@ -222,16 +202,32 @@ public:
             uint8_t p1val = DIRECT_PIN_READ(arg->pin1_register, arg->pin1_bitmask);
             if (p1val && !arg->state){
                 arg->position++;
-                arg->time_pos = arg->time_pos == NUM_MEASUREMENTS - 1 ? 0 : arg->time_pos + 1;
-                arg->times[arg->time_pos] = micros();            
+                if (abs(micros() - arg->prev_update_time) > arg->update_interval){
+                    arg->speed = 60*1000*1000 / (abs(micros() - arg->prev_update_time) / arg->num_ticks) / arg->ppr;
+                    arg->prev_update_time = micros();
+                    arg->prev_tick_time =  micros();
+                    arg->num_ticks = 1;
+                }
+                else {
+                    arg->prev_tick_time = micros();
+                    arg->num_ticks++;
+                }            
             }
             arg->state = p1val;
         }
         else{
             uint8_t p1val = DIRECT_PIN_READ(arg->pin1_register, arg->pin1_bitmask);
             uint8_t p2val = DIRECT_PIN_READ(arg->pin2_register, arg->pin2_bitmask);
-            arg->time_pos = arg->time_pos == NUM_MEASUREMENTS - 1 ? 0 : arg->time_pos + 1;
-            arg->times[arg->time_pos] = micros();            
+            if (abs(micros() - arg->prev_update_time) > arg->update_interval){
+                arg->speed = 60*1000*1000 / (abs(micros() - arg->prev_update_time) / arg->num_ticks) / arg->ppr;
+                arg->prev_update_time = micros();
+                arg->prev_tick_time =  micros();
+                arg->num_ticks = 1;
+            }
+            else {
+                arg->prev_tick_time = micros();
+                arg->num_ticks++;
+            }          
             uint8_t state = arg->state & 3;
             if (p1val) state |= 4;
             if (p2val) state |= 8;
