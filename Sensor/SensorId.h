@@ -22,6 +22,7 @@ enum sensor_id_t : uint16_t
 	FLAG_DATACOLLECTING             = 1,	//NumBytes: 1
 	COMMAND_SDCARDFILENAMESTRING    = 2,	//NumBytes: 12
 	COMMAND_TOGGLE_TEENSY_LED       = 3,	//NumBytes: 1
+	COMMAND_TARE_LOAD_CELL          = 4,	//NumBytes: 1
 	TEST_SENSOR_0                   = 90,	//NumBytes: 4
 	TEST_SENSOR_1                   = 91,	//NumBytes: 4
 	TEST_SENSOR_2                   = 92,	//NumBytes: 4

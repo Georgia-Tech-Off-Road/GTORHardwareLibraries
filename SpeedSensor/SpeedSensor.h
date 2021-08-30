@@ -127,7 +127,7 @@ public:
         interrupts();
     }    
     inline uint16_t get_speed(){
-        noInterrupts();
+        noInterrupts(); 
         uint16_t rpm = 0;
         
         // If measurement hasn't been taken in a while, assume it is slowing down
@@ -203,7 +203,8 @@ public:
             if (p1val && !arg->state){
                 arg->position++;
                 if (abs(micros() - arg->prev_update_time) > arg->update_interval){
-                    arg->speed = 60*1000*1000 / (abs(micros() - arg->prev_update_time) / arg->num_ticks) / arg->ppr;
+                    float f_speed = 60.0*1000.0*1000.0 * (float)arg->num_ticks / (float)(abs(micros() - arg->prev_update_time) * arg->ppr);
+                    arg->speed = (uint16_t)f_speed;
                     arg->prev_update_time = micros();
                     arg->prev_tick_time =  micros();
                     arg->num_ticks = 1;
