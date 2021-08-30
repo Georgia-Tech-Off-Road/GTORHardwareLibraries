@@ -8,31 +8,6 @@ enum sensor_type_t : uint8_t {
     PASSIVE, ACTIVE
 };
 
-class BaseSensor {
-protected:
-    sensor_id_t   _id;
-    sensor_type_t _type;
-    uint8_t  _pack_bytes;
-
-public:
-    /**
-     * Getters and Setters
-     */
-    virtual sensor_id_t get_id() = 0;
-    virtual void set_id(sensor_id_t id) = 0;
-    virtual sensor_type_t get_type() = 0;
-    virtual void set_type(sensor_type_t type) = 0;
-    virtual uint8_t get_pack_bytes() = 0;
-    virtual void set_pack_bytes(uint8_t pack_bytes) = 0;
-
-    /**
-     * Member functions
-     */
-    virtual void pack   (byte *pack) = 0;
-    virtual void unpack (const byte *pack) = 0;
-};
-
-
 template <class DataType>
 class Sensor : public BaseSensor {
 protected:
@@ -42,12 +17,23 @@ public:
     Sensor(){
         _id = DEFAULT_NO_SENSOR;
         _type = ACTIVE;
+        _pack_bytes = sizeof(DataType);
     }
 
     /**
      * Getters and Setters
      */
-    virtual const DataType& get_data() = 0;
+    virtual const DataType& get_data() {
+        return _data;
+    }
+    virtual const DataType& update_internal() {
+        if(_type == ACTIVE){
+            return update();
+        }
+        return _data;
+    }
+    virtual const DataType& update() = 0;
+
     virtual sensor_id_t get_id(){
         return _id;
     }
@@ -70,8 +56,13 @@ public:
     /**
      * Member functions
      */
-    virtual void pack   (byte *pack) { }
-    virtual void unpack (const byte *pack) { }
+    virtual void pack   (byte *pack) {
+        memcpy(((DataType*)pack), &_data, sizeof(DataType));
+        *((DataType*)pack) = _data;
+    }
+    virtual void unpack (const byte *pack) {
+        _data = *((DataType*)pack);
+    }
 };
 
 class GenericSensor : public Sensor<std::vector<byte>> {
@@ -79,6 +70,7 @@ public:
     GenericSensor (sensor_id_t id, uint8_t pack_bytes){
         _id = id;
         _pack_bytes = pack_bytes;
+        _type = PASSIVE;
         _data.resize(pack_bytes);
     }
     void pack   (byte* pack){
@@ -95,27 +87,29 @@ public:
 
 // Sending states.
 // Default (initial) state will be 0
-class StateSensor : public Sensor<uint8_t> {
+template<typename StateType>
+class StateSensor : public Sensor<StateType> {
 public:
     StateSensor(){
-        _pack_bytes = 1;
+        _pack_bytes = sizeof(StateType);
     }
     void pack(byte* pack){
-        *((uint8_t*)pack) = _data;
+        *((StateType*)pack) = _data;
     }
     void unpack (const byte* pack){
-        _data = *((uint8_t*)pack);
+        _data = *((StateType*)pack);
     }
-    void set_state(uint8_t state){
+    void set_state(StateType state){
         _data = state;
     }
-    uint8_t get_state(){
+    StateType get_state(){
         return get_data();
     }
-    const uint8_t& get_data(){
+    const StateType& get_data(){
         return _data;
     }
 };
+
 
 #include "../LDS/LDS.h"
 #include "../TimeSensor/TimeSensor.h"
