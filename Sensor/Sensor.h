@@ -124,5 +124,6 @@ public:
 #include "../SparkFun_Qwiic_Scale_NAU7802_Arduino_Library-master/src/SparkFun_Qwiic_Scale_NAU7802_Arduino_Library.h"
 //#include "../RTCSensor/RTCSensor.h"
 #include "./DerivedSensors/ADCSensor.h"
+#include "./DerivedSensors/ButtonSensor.h"
 
 #endif
