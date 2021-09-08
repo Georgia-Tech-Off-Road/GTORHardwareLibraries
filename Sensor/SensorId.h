@@ -23,6 +23,7 @@ enum sensor_id_t : uint16_t
 	COMMAND_SDCARDFILENAMESTRING    = 2,	//NumBytes: 12
 	COMMAND_TOGGLE_TEENSY_LED       = 3,	//NumBytes: 1
 	COMMAND_TARE_LOAD_CELL          = 4,	//NumBytes: 1
+	COMMAND_MOTOR_SPEED             = 5,	//NumBytes: 1
 	TEST_SENSOR_0                   = 90,	//NumBytes: 4
 	TEST_SENSOR_1                   = 91,	//NumBytes: 4
 	TEST_SENSOR_2                   = 92,	//NumBytes: 4
@@ -88,7 +89,7 @@ enum sensor_id_t : uint16_t
 	BRAKE_SENSOR2                   = 303,	//NumBytes: 4
 	PRESSURE_FRONTBRAKE_PSI         = 304,	//NumBytes: 2
 	PRESSURE_REARBRAKE_PSI          = 305,	//NumBytes: 2
-	FORCE_DYNO_LBS                  = 306,	//NumBytes: 4
+	FORCE_SHOCKDYNO_LBS             = 306,	//NumBytes: 4
 	WHEEL_FORCE_TRANSDUCER_ANALOG_1 = 307,	//NumBytes: [4, 4, 4, 4] - FX, FY, FZ, MX
 	WHEEL_FORCE_TRANSDUCER_ANALOG_2 = 308,	//NumBytes: [4, 4, 4, 4] - MY, MZ, Vel, Pos
 	WHEEL_FORCE_TRANSDUCER_ANALOG_3 = 309,	//NumBytes: [4, 4, 4, 4] - AccelX, AccelY
@@ -96,11 +97,12 @@ enum sensor_id_t : uint16_t
     /**
      * 400 - LDS SENSORS
      */
-	LDS_GENERIC                     = 400,	//NumBytes: 2
-	LDS_FRONTLEFTSHOCK_MM           = 401,	//NumBytes: 2
-	LDS_FRONTRIGHTSHOCK_MM          = 402,	//NumBytes: 2
-	LDS_BACKLEFTSHOCK_MM            = 403,	//NumBytes: 2
-	LDS_BACKRIGHTSHOCK_MM           = 404,	//NumBytes: 2
+	LDS_GENERIC                     = 400,	//NumBytes: 1
+	LDS_FRONTLEFTSHOCK_MM           = 401,	//NumBytes: 1
+	LDS_FRONTRIGHTSHOCK_MM          = 402,	//NumBytes: 1
+	LDS_BACKLEFTSHOCK_MM            = 403,	//NumBytes: 1
+	LDS_BACKRIGHTSHOCK_MM           = 404,	//NumBytes: 1
+	LDS_SHOCKDYNO_MM                = 405,	//NumBytes: 1
 
     /**
      * 500 - IMU SENSORS
