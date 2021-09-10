@@ -28,7 +28,10 @@ public:
     }
 
     const bool& get_data (){
-        return digitalRead(_pin);
+        if (_type == ACTIVE) {
+            _data = digitalRead(_pin);
+        }
+        return _data;
     }
 
     void pack(byte* pack){
@@ -36,7 +39,7 @@ public:
     }
 
     void unpack(const byte* pack){
-        _data = *((uint32_t*)pack);
+        _data = *((bool*)pack);
     }
 };
 
