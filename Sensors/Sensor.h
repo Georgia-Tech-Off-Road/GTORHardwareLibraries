@@ -60,7 +60,7 @@ public:
         memcpy(((DataType*)pack), &_data, sizeof(DataType));
         *((DataType*)pack) = _data;
     }
-    virtual void unpack (const byte *pack) {
+    virtual void unpack (const  byte *pack) {
         _data = *((DataType*)pack);
     }
 };

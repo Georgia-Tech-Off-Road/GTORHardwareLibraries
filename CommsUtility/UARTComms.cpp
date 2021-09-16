@@ -168,11 +168,11 @@ void UARTComms::send_packet() {
     uint32_t time_current = micros();
     if(_is_sending_data){
         if(abs(time_current - _time_at_last_send) >= _sending_period_us){
-        packetize();
-        _port->write(_packet_send.data(), _packet_send.size());
-        _time_at_last_send = time_current;
-        _packet_send.clear();
-    }
+            packetize();
+            _port->write(_packet_send.data(), _packet_send.size());
+            _time_at_last_send = time_current;
+            _packet_send.clear();
+        }
     } else {
         if(abs(time_current - _time_at_last_send) >= _settings_period_us){
             packetize();
