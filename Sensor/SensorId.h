@@ -5,6 +5,8 @@ go to Application>DataAcquisition>SensorId.py and edit the dictionary there. The
 this file by using Application>GenerateSensorIdHFile.py (It will automatically place the
 file in the correct location i.e. Libraries>Sensor>SensorId.h)
 
+Generated at: 2021-09-23 21:43:38.071803
+
 *******************************************************************************************/
 
 #ifndef SENSORID_H
@@ -89,10 +91,11 @@ enum sensor_id_t : uint16_t
 	BRAKE_SENSOR2                   = 303,	//NumBytes: 4
 	PRESSURE_FRONTBRAKE_PSI         = 304,	//NumBytes: 2
 	PRESSURE_REARBRAKE_PSI          = 305,	//NumBytes: 2
-	FORCE_SHOCKDYNO_LBS             = 306,	//NumBytes: 4
-	WHEEL_FORCE_TRANSDUCER_ANALOG_1 = 307,	//NumBytes: [4, 4, 4, 4] - FX, FY, FZ, MX
-	WHEEL_FORCE_TRANSDUCER_ANALOG_2 = 308,	//NumBytes: [4, 4, 4, 4] - MY, MZ, Vel, Pos
-	WHEEL_FORCE_TRANSDUCER_ANALOG_3 = 309,	//NumBytes: [4, 4, 4, 4] - AccelX, AccelY
+	FORCE_ENGINEDYNO_LBS            = 306,	//NumBytes: 4
+	FORCE_SHOCKDYNO_LBS             = 307,	//NumBytes: 4
+	WHEEL_FORCE_TRANSDUCER_ANALOG_1 = 308,	//NumBytes: [4, 4, 4, 4] - FX, FY, FZ, MX
+	WHEEL_FORCE_TRANSDUCER_ANALOG_2 = 309,	//NumBytes: [4, 4, 4, 4] - MY, MZ, Vel, Pos
+	WHEEL_FORCE_TRANSDUCER_ANALOG_3 = 310,	//NumBytes: [4, 4, 4, 4] - AccelX, AccelY
 
     /**
      * 400 - LDS SENSORS
