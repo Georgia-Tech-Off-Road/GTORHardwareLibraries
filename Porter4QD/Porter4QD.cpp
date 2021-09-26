@@ -18,4 +18,8 @@ void Porter4QD::setSpeed(uint8_t speed){
     analogWrite(_pin, scaled_speed);
 }
 
+void Porter4QD::kill(){
+    analogWrite(_pin, 0);     
+}
+
 #endif
