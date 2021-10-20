@@ -1,10 +1,10 @@
 #ifndef SDWRITE_H
 #define SDWRITE_H
 
-#include "BaseComms.h"
+#include "Comms.h"
 #include <SD.h>
 
-class SDWrite : public BaseComms {
+class SDWrite : public Comms {
 private:
     const uint8_t _port;
     String _filename;

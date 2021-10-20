@@ -1,4 +1,4 @@
-#include "BaseComms.h"
+#include "Comms.h"
 
 end_code_t::end_code_t() {
     for(uint8_t i = 0; i < 7; ++i) code[i] = 0xFF;
@@ -12,7 +12,7 @@ const uint8_t& end_code_t::operator[] (uint8_t i) const {
 /*
  * Constructor
  */
-BaseComms::BaseComms() : 
+Comms::Comms() : 
     _is_sending_data(0),
     _is_receiving_data(0) { }
 
@@ -20,18 +20,18 @@ BaseComms::BaseComms() :
 /**
  * Updates the Comms class. Need to define read_packet and send_packet in derived class.
  */
-void BaseComms::update(){
+void Comms::update(){
     read_packet();
     send_packet();
 }
 
-void BaseComms::update_output_blocks(){
+void Comms::update_output_blocks(){
     for(auto it = _transmit_blocks.begin(); it != _transmit_blocks.end(); it++){
         (*it)->update();
     }
 }
 
-void BaseComms::unpacketize() {
+void Comms::unpacketize() {
     // check ack byte --> [000000] & is_sending_data & is_receiving_data
     // ^ this is with respect to the sender.
     // if 0x03, then parse data     and send data.
@@ -117,7 +117,7 @@ void BaseComms::unpacketize() {
     // populate data into blocks using unpack(byte*)
 }
 
-void BaseComms::packetize() {
+void Comms::packetize() {
     uint8_t ack = (0x02 & (_is_sending_data << 1)) | (0x01 & (_is_receiving_data));
     _packet_send.push_back(ack);
     if(_is_sending_data){
@@ -184,13 +184,13 @@ void BaseComms::packetize() {
     // packetize
 }
 
-uint8_t BaseComms::get_expected_receive_bytes() {
+uint8_t Comms::get_expected_receive_bytes() {
     uint8_t bytes = 0;
     for(auto it = _received_blocks.begin(); it != _received_blocks.end(); it++) bytes += (*it)->get_packlen();
     return (9 + bytes);
 }
 
-uint8_t BaseComms::get_expected_transmit_bytes() {
+uint8_t Comms::get_expected_transmit_bytes() {
     uint8_t bytes = 0;
     for(auto it = _transmit_blocks.begin(); it != _transmit_blocks.end(); it++) bytes += (*it)->get_packlen();
     for(auto tp = _throughput_comms.begin(); tp != _throughput_comms.end(); tp++){
@@ -213,7 +213,7 @@ uint8_t BaseComms::get_expected_transmit_bytes() {
  * @param block A pointer to a block object (derived from Block class)
  * @param id The ID of the block being attached from BlockList
  */
-void BaseComms::attach_input_block(BaseBlock &block, block_id_t id) {
+void Comms::attach_input_block(BaseBlock &block, block_id_t id) {
     // Check to see if it is already attached. If so, do nothing
     for (auto it = _input_blocks.begin(); it != _input_blocks.end(); it++){
         if((*it)->get_id() == id)
@@ -238,7 +238,7 @@ void BaseComms::attach_input_block(BaseBlock &block, block_id_t id) {
  * @param block A pointer to a block object (derived from Block class)
  * @param id The ID of the block being attached from BlockList
  */
-void BaseComms::attach_output_block(BaseBlock &block, block_id_t id){
+void Comms::attach_output_block(BaseBlock &block, block_id_t id){
     // Check to see if it is detached. If so, remove it from the detached list
     for (auto ds = _detached_blocks.begin(); ds != _detached_blocks.end(); ds++){
         if((*ds) == id)
@@ -255,12 +255,12 @@ void BaseComms::attach_output_block(BaseBlock &block, block_id_t id){
 }
 
 /*
- * @brief Attaches a BaseComms object. It will send all its recieved data to be sent out
+ * @brief Attaches a Comms object. It will send all its recieved data to be sent out
  *        out of the ports attached to it.
  * 
- * @param throughput_comms A pointer to a BaseComms object to sent its data to
+ * @param throughput_comms A pointer to a Comms object to sent its data to
  */
-void BaseComms::attach_throughput_comms(BaseComms &throughput_comms){
+void Comms::attach_throughput_comms(Comms &throughput_comms){
     // Check to see if it is already attached. If so, do nothing
     for (auto it = _throughput_comms.begin(); it != _throughput_comms.end(); it++){
         // TODO: Fix logic??
@@ -277,7 +277,7 @@ void BaseComms::attach_throughput_comms(BaseComms &throughput_comms){
  * 
  * @param id The ID of the block being attached from BlockList
  */
-void BaseComms::detach_output_block(block_id_t id){
+void Comms::detach_output_block(block_id_t id){
     // Check to see if it is already attached. If so, remove it
     for (auto it = _transmit_blocks.begin(); it != _transmit_blocks.end(); it++){
         if((*it)->get_id() == id)

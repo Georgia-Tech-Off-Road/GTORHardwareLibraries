@@ -1,9 +1,9 @@
 #ifndef UARTCOMMS_H
 #define UARTCOMMS_H
 
-#include "BaseComms.h"
+#include "Comms.h"
 
-class UARTComms : public BaseComms {
+class UARTComms : public Comms {
 private:
     HardwareSerial * const _port;
     const uint32_t _baud;

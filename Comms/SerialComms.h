@@ -1,9 +1,9 @@
 #ifndef SERIALCOMMS_H
 #define SERIALCOMMS_H
 
-#include "BaseComms.h"
+#include "Comms.h"
 
-class SerialComms : public BaseComms {
+class SerialComms : public Comms {
 private:
     usb_serial_class * const _port;
     const uint32_t _baud;

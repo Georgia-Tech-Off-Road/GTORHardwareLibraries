@@ -1,5 +1,5 @@
-#ifndef BASECOMMS_H
-#define BASECOMMS_H
+#ifndef COMMS_H
+#define COMMS_H
 
 #include "Block.h"
 
@@ -9,7 +9,7 @@ struct end_code_t {
     const uint8_t& operator[] (uint8_t i) const;
 };
 
-class BaseComms {
+class Comms {
 protected:
     bool _is_sending_data;
     bool _is_receiving_data;
@@ -21,7 +21,7 @@ protected:
     std::vector<BaseBlock*> _received_blocks;
     std::vector<BaseBlock*> _transmit_blocks;
     std::vector<block_id_t> _detached_blocks;
-    std::vector<BaseComms*> _throughput_comms;
+    std::vector<Comms*> _throughput_comms;
 
     virtual void read_packet() = 0;
     virtual void send_packet() = 0;
@@ -29,7 +29,7 @@ protected:
     void unpacketize();
 
 public:
-    BaseComms();
+    Comms();
 
     void update();
     void update_output_blocks();
@@ -37,7 +37,7 @@ public:
     void attach_input_block (BaseBlock &block, block_id_t id);
     void attach_output_block(BaseBlock &block, block_id_t id);
 
-    void attach_throughput_comms(BaseComms &throughput_comms);
+    void attach_throughput_comms(Comms &throughput_comms);
     void detach_output_block(block_id_t id);
 
     uint8_t get_expected_receive_bytes();
