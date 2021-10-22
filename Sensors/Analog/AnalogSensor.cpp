@@ -9,6 +9,10 @@ void BaseAnalogSensor::set_vrange(float vmin, float vmax){
 	_vmax = vmax;
 }
 
+void BaseAnalogSensor::set_adc(ADC* adc) {
+	_adc = adc;
+}
+
 uint8_t BaseAnalogSensor::get_port() {
 	return _port;
 }

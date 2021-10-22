@@ -3,9 +3,8 @@
 /*
  * Constructor
  */
-UARTComms::UARTComms(uint32_t baud, HardwareSerial &port) : 
+UARTComms::UARTComms(HardwareSerial &port) : 
     _port(&port),
-    _baud(baud), 
     _sending_period_us(10000),
     _settings_period_us(500000),
     _time_at_last_send(0),
@@ -14,7 +13,8 @@ UARTComms::UARTComms(uint32_t baud, HardwareSerial &port) :
 /*
  * @brief Initializes the hardware for the Serial Port
  */
-void UARTComms::begin(){
+void UARTComms::begin(uint32_t baud){
+    _baud = baud;
     _port->begin(_baud);
 }
 

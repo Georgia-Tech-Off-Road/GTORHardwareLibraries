@@ -40,8 +40,14 @@ public:
      * Constructor for the Potentiometer sensor
      */
     Potentiometer(uint16_t full_scale_range, bool is_reversed = false);
+    void set_raw(float raw);
 
 };
 
+template class Potentiometer<uint8_t>;
+template class Potentiometer<uint16_t>;
+template class Potentiometer<uint32_t>;
+template class Potentiometer<float>;
+template class Potentiometer<double>;
 
 #endif

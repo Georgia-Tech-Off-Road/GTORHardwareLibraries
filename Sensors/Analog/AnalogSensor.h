@@ -8,7 +8,7 @@
 
 class ADC;
 
-class BaseAnalogSensor : public BaseBlock {
+class BaseAnalogSensor {
 protected:
 	float _raw;
 	uint8_t _port;
@@ -23,21 +23,19 @@ public:
 	
 	// Need to implement for individual sensors.
 	// raw is normalized from 0.0-1.0, need to set_data here.
-	virtual void set_raw(uint32_t raw) = 0;
-
+	virtual void set_raw(float raw) = 0;
 
 	uint8_t get_port();
 	ADC* get_adc();
 	uint32_t get_raw();
 	float get_voltage();
-
 };
 
 template <typename DataType>
-class AnalogSensor : public Block<DataType>,
-					 public BaseAnalogSensor {
+class AnalogSensor : public BaseAnalogSensor, public Block<DataType> {
 public:
 	void update();
+	virtual void set_raw(float raw) = 0;
 };
 
 #include "AnalogSensorTypes.h"

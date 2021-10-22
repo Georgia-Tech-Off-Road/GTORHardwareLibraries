@@ -3,8 +3,7 @@
 /*
  * Constructor
  */
-SerialComms::SerialComms(uint32_t baud, usb_serial_class &port) : 
-    _baud(baud), 
+SerialComms::SerialComms(usb_serial_class &port) : 
     _port(&port),
     _sending_period_us(10000),
     _settings_period_us(500000),
@@ -14,7 +13,8 @@ SerialComms::SerialComms(uint32_t baud, usb_serial_class &port) :
 /*
  * @brief Initializes the hardware for the Serial Port
  */
-void SerialComms::begin(){
+void SerialComms::begin(uint32_t baud){
+    _baud = baud;
     _port->begin(_baud);
 }
 

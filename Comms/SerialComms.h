@@ -6,7 +6,7 @@
 class SerialComms : public Comms {
 private:
     usb_serial_class * const _port;
-    const uint32_t _baud;
+    uint32_t _baud;
 
     const uint32_t _sending_period_us;
     const uint32_t _settings_period_us;
@@ -17,8 +17,8 @@ private:
     void send_packet();
     
 public:
-    SerialComms(uint32_t baud, usb_serial_class &port);
-    void begin();
+    SerialComms(usb_serial_class &port);
+    void begin(uint32_t baud);
     usb_serial_class *get_port();
 };
 

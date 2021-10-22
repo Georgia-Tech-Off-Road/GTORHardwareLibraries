@@ -6,7 +6,7 @@
 class UARTComms : public Comms {
 private:
     HardwareSerial * const _port;
-    const uint32_t _baud;
+    uint32_t _baud;
 
     const uint32_t _sending_period_us;
     const uint32_t _settings_period_us;
@@ -17,8 +17,8 @@ private:
     void send_packet();
     
 public:
-    UARTComms(uint32_t baud, HardwareSerial &port);
-    void begin();
+    UARTComms(HardwareSerial &port);
+    void begin(uint32_t baud);
     HardwareSerial *get_port();
 };
 
