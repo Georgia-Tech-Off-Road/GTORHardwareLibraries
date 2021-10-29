@@ -3,19 +3,21 @@
 
 #include "ADS8332.h"
 
-ADS8332::ADS8332(uint8_t _SelectPin, uint8_t _ConvertPin, uint8_t _EOCPin)
+ADS8332::ADS8332(uint8_t _SelectPin, uint8_t _ConvertPin, uint8_t _EOCPin = -1)
 {
 	SelectPin = _SelectPin;
-	ConvertPin = _ConvertPin;
-	EOCPin = _EOCPin;
 	pinMode(ConvertPin, OUTPUT);
 	digitalWrite(ConvertPin, HIGH);
 	pinMode(SelectPin, OUTPUT);
 	digitalWrite(SelectPin, HIGH);
-	pinMode(EOCPin, INPUT);
+	if(_EOCPin != -1){
+		pinMode(EOCPin, INPUT);
+		manual_trigger = true;
+	}
 	Vref = 2.5;
 	EOCTimeout = 100000;
 	ConnectionSettings = SPISettings(12000000, MSBFIRST, SPI_MODE1);
+	manual_trigger = false;
 }
 
 void ADS8332::setCommandBuffer(CommandRegister Command)
@@ -29,7 +31,7 @@ void ADS8332::begin()
 	setCommandBuffer(CommandRegister::WriteConfig);
 	setConfiguration(ConfigRegisterMap::ChannelSelectMode, false);
 	setConfiguration(ConfigRegisterMap::ClockSource, true);
-	setConfiguration(ConfigRegisterMap::TriggerMode, false);
+	setConfiguration(ConfigRegisterMap::TriggerMode, manual_trigger);
 	setConfiguration(ConfigRegisterMap::SampleRate, true);
 	setConfiguration(ConfigRegisterMap::EOCINTPolarity, true);
 	setConfiguration(ConfigRegisterMap::EOCINTMode, true);
@@ -135,11 +137,6 @@ uint16_t ADS8332::sendCommandBuffer(bool SendLong)
 	}
 	digitalWrite(SelectPin, HIGH);
 	SPI.endTransaction();
-/*	Serial.print("O:");
-	Serial.print(TempOutput.UIntSmallData[1]);
-	Serial.print(":");
-	Serial.print(TempOutput.UIntSmallData[0]);
-	Serial.print(";\n");*/
 	return TempInput.UIntLargeData;
 }
 
@@ -155,6 +152,7 @@ uint8_t ADS8332::getSample(uint16_t* WriteVariable, uint8_t UseChannel)
 {
 	Channel = (uint8_t)( constrain(UseChannel,0,7) );
 	setSampleChannel();
+	delayMicroseconds(2);
 	return getSampleInteger(WriteVariable);
 }
 
@@ -212,7 +210,7 @@ uint8_t ADS8332::getSampleInteger(uint16_t* WriteVariable)
 	uint32_t starttime = micros();
 	bool keepwaiting = true;
 	digitalWrite(ConvertPin, LOW);
-	while(keepwaiting)
+	while(manual_trigger && keepwaiting)
 	{
 		if (digitalRead(EOCPin) == 0)
 		{
@@ -231,8 +229,9 @@ uint8_t ADS8332::getSampleInteger(uint16_t* WriteVariable)
 	keepwaiting = true;
 	starttime = micros();
 	SPI.beginTransaction(ConnectionSettings);
-	while(keepwaiting)
+	while(manual_trigger && keepwaiting)
 	{
+		Serial.print(manual_trigger);
 		if (digitalRead(EOCPin) == 1)
 		{
 			keepwaiting = false;

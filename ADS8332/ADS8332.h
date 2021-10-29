@@ -55,6 +55,7 @@ class ADS8332
 			Reset = 11, //0 => reset, 1 => normal, default => 1
 		};*/
 		ADS8332(uint8_t SelectPin, uint8_t ConvertPin, uint8_t EOCPin);
+		ADS8332(uint8_t _SelectPin, uint8_t _ConvertPin);
 		void begin();
 		void reset();
 		uint8_t getSample(float* WriteVariable, uint8_t UseChannel);
@@ -75,6 +76,7 @@ class ADS8332
 		uint8_t getSampleInteger(uint16_t* WriteVariable);
 		uint8_t Channel = 0;
 		bool beginsent = false;
+		bool manual_trigger;
 		uint32_t EOCTimeout;
 		uint16_t CommandBuffer;
 		uint8_t SelectPin;
