@@ -122,7 +122,7 @@ uint16_t ADS8332::sendCommandBuffer(bool SendLong)
 	TempOutput.UIntLargeData = CommandBuffer;
 
 	SPI.beginTransaction(ConnectionSettings);
-	SPI.transfer( 0 );
+	SPI.transfer(0);
 
 	digitalWrite(SelectPin,LOW);
 
@@ -152,6 +152,7 @@ uint8_t ADS8332::getSample(uint16_t* WriteVariable, uint8_t UseChannel)
 {
 	Channel = (uint8_t)( constrain(UseChannel,0,7) );
 	setSampleChannel();
+	sendCommandBuffer(true);
 	delayMicroseconds(2);
 	return getSampleInteger(WriteVariable);
 }
@@ -263,29 +264,14 @@ uint8_t ADS8332::getSampleInteger(uint16_t* WriteVariable)
 		TagBlank = (uint8_t)(TAGData << 3) == (uint8_t)(0);
 		if (ChannelCorrect && TagBlank)
 		{
-			/*Serial.print("ADCS ");
-			Serial.print(ChannelTag);
-			Serial.print(",");
-			Serial.print(Channel);
-			Serial.print(",");
-			Serial.print(TempInput.UIntLargeData);
-			Serial.print("\n");*/
 			*WriteVariable = TempInput.UIntLargeData;
 			return 0;
 		}
 		else
 		{
+			Serial.printf("Expected channel %d but received channel %d\n", Channel, ChannelTag);
 			if ( (micros() - starttime) > EOCTimeout)
 			{
-				/*
-				Serial.print("ADCE ");
-				Serial.print(ChannelTag);
-				Serial.print(",");
-				Serial.print(Channel);
-				Serial.print(",");
-				Serial.print(TempInput.UIntLargeData);
-				Serial.print("\n");
-				*/
 				return 3;
 			}
 			else
