@@ -69,8 +69,8 @@ public:
 class DynamicBlock : public Block<std::vector<uint8_t>> {
 public:
     DynamicBlock (block_id_t id, uint8_t packlen);
-    void pack   (byte* pack);
-    void unpack (const byte* pack);
+    void pack   (uint8_t* pack);
+    void unpack (const uint8_t* pack);
 };
 
 #include "BlockTypes.h"

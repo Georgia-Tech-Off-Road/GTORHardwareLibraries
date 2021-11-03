@@ -64,10 +64,10 @@ DynamicBlock::DynamicBlock (block_id_t id, uint8_t packlen){
     _packlen = packlen;
     _data.resize(packlen);
 }
-void DynamicBlock::pack   (byte* pack){
+void DynamicBlock::pack   (uint8_t* pack){
     memcpy(pack, _data.data(), _packlen);
 }
-void DynamicBlock::unpack (const byte* pack){
+void DynamicBlock::unpack (const uint8_t* pack){
     memcpy(_data.data(), pack, _packlen);
 }
 

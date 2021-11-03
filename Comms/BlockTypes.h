@@ -15,3 +15,10 @@ struct imu_data_t {
     float temperature;
 };
 template class Block<imu_data_t>;
+
+typedef struct {
+    uint32_t position;
+    uint16_t speed;
+} speed_sensor_data_t;
+
+template class Block<speed_sensor_data_t>;
