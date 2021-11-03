@@ -4,17 +4,6 @@
 #include <Adafruit_ISM330DHCX.h>
 #include <Block.h>
 
-struct float_3d_t {
-    float x;
-    float y;
-    float z;
-};
-
-struct imu_data_t {
-    float_3d_t acceleration;
-    float_3d_t gyro;
-    float temperature;
-};
 
 class IMUSensor : public Block<imu_data_t> {
 private:
@@ -49,26 +38,26 @@ public:
         _data.temperature = temp.temperature;
     }
 
-    // void pack(byte* pack){
-    //     float* p = (float*) pack;
-    //     *(p++) = _data.acceleration.x;
-    //     *(p++) = _data.acceleration.y;
-    //     *(p++) = _data.acceleration.z;
-    //     *(p++) = _data.gyro.x;
-    //     *(p++) = _data.gyro.y;
-    //     *(p++) = _data.gyro.z;
-    //     *p     = _data.temperature;
-    // }
-    // void unpack(const byte* pack){
-    //     const float* p = (const float*) pack;
-    //     _data.acceleration.x = *(p++);
-    //     _data.acceleration.y = *(p++);
-    //     _data.acceleration.z = *(p++);
-    //     _data.gyro.x         = *(p++);
-    //     _data.gyro.y         = *(p++);
-    //     _data.gyro.z         = *(p++);
-    //     _data.temperature    = *p;
-    // }
+    void pack(byte* pack){
+        float* p = (float*) pack;
+        *(p++) = _data.acceleration.x;
+        *(p++) = _data.acceleration.y;
+        *(p++) = _data.acceleration.z;
+        *(p++) = _data.gyro.x;
+        *(p++) = _data.gyro.y;
+        *(p++) = _data.gyro.z;
+        *p     = _data.temperature;
+    }
+    void unpack(const byte* pack){
+        const float* p = (const float*) pack;
+        _data.acceleration.x = *(p++);
+        _data.acceleration.y = *(p++);
+        _data.acceleration.z = *(p++);
+        _data.gyro.x         = *(p++);
+        _data.gyro.y         = *(p++);
+        _data.gyro.z         = *(p++)   ;
+        _data.temperature    = *p;
+    }
 };
 
 #endif

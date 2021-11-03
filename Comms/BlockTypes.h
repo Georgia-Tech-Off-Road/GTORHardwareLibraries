@@ -4,5 +4,14 @@ template class Block<uint32_t>;
 template class Block<float>;
 template class Block<double>;
 
-#include <IMUSensor.h>
+struct float_3d_t {
+    float x;
+    float y;
+    float z;
+};
+struct imu_data_t {
+    float_3d_t acceleration;
+    float_3d_t gyro;
+    float temperature;
+};
 template class Block<imu_data_t>;

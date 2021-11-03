@@ -38,6 +38,7 @@ void Comms::unpacketize() {
     // if 0x02, then parse data     but send settings.
     // if 0x01, then parse settings and send data.
     // if 0x00, then parse settings and send settings.
+    static uint16_t attempts = 0; 
 
     const uint8_t ack = _packet_receive[0];
     if(ack > 0x03) return; // ACK IS NOT STANDARD! CHANGE TO DO SOMETHING ELSE
@@ -62,7 +63,10 @@ void Comms::unpacketize() {
             }
         } else { // packet lengths not good
             // CHANGE LOGIC TO DO THIS AFTER X AMOUNTS OF MISSES.
-            _is_receiving_data = 0;
+            if(++attempts > 10){
+                _is_receiving_data = 0;
+                attempts = 0;
+            }
         }
     } else { // RECEIVING SETTINGS
         // Serial.print("\nreceived settings of length: ");

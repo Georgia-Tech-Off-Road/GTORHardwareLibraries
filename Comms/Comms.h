@@ -25,8 +25,8 @@ protected:
 
     virtual void read_packet() = 0;
     virtual void send_packet() = 0;
-    void packetize();
-    void unpacketize();
+    virtual void packetize();
+    virtual void unpacketize();
 
 public:
     Comms();
@@ -42,6 +42,8 @@ public:
 
     uint8_t get_expected_receive_bytes();
     uint8_t get_expected_transmit_bytes();
+
+    friend class SerialComms;
 };
 
 #endif

@@ -1,10 +1,10 @@
-#ifndef SDWRITE_H
-#define SDWRITE_H
+#ifndef SDCOMMS_H
+#define SDCOMMS_H
 
 #include "Comms.h"
 #include <SD.h>
 
-class SDWrite : public Comms {
+class SDComms : public Comms {
 private:
     const uint8_t _port;
     String _filename;
@@ -16,7 +16,7 @@ private:
     void send_packet();
     
 public:
-    SDWrite(uint8_t port);
+    SDComms(uint8_t port);
     void begin(const char* filename);
     const uint8_t get_port();
 };

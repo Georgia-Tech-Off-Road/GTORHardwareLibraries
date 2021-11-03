@@ -2,6 +2,7 @@
 #define SERIALCOMMS_H
 
 #include "Comms.h"
+#include "ClockTimer.h"
 
 class SerialComms : public Comms {
 private:
@@ -15,11 +16,16 @@ private:
 
     void read_packet();
     void send_packet();
+
+    ClockTimerf _monitor_timer;
     
 public:
     SerialComms(usb_serial_class &port);
     void begin(uint32_t baud);
     usb_serial_class *get_port();
+
+    void update_monitor();
+    // void update_plotter();
 };
 
 #endif

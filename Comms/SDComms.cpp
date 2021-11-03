@@ -3,7 +3,7 @@
 /*
  * Constructor
  */
-SDWrite::SDWrite(uint8_t port) : 
+SDComms::SDComms(uint8_t port) : 
     _port(port),
     _sending_period_us(10000),
     _time_at_last_send(0) { }
@@ -11,16 +11,16 @@ SDWrite::SDWrite(uint8_t port) :
 /*
  * @brief Initializes the hardware for the Serial Port
  */
-void SDWrite::begin(const char* filename){
+void SDComms::begin(const char* filename){
     SD.begin(_port);
     _filename = String(filename);
 }
 
-void SDWrite::read_packet() {
-    // Do nothing. SDWrite only sends packets.
+void SDComms::read_packet() {
+    // Do nothing. SDComms only sends packets.
 }
 
-void SDWrite::send_packet() {
+void SDComms::send_packet() {
     // if time_interval < passed time, continue
     uint32_t time_current = micros();
     if(abs(time_current - _time_at_last_send) >= _sending_period_us){
@@ -34,7 +34,7 @@ void SDWrite::send_packet() {
     }
 }
 
-const uint8_t SDWrite::get_port() {
+const uint8_t SDComms::get_port() {
     return _port;
 }
 
