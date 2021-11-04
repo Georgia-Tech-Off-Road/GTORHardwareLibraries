@@ -5,7 +5,7 @@ go to Application>DataAcquisition>SensorId.py and edit the dictionary there. The
 this file by using Application>GenerateSensorIdHFile.py (It will automatically place the
 file in the correct location i.e. Libraries>Sensor>SensorId.h)
 
-Generated at: 2021-09-23 21:43:38.071803
+Generated at: 2021-11-04 18:33:47.859889
 
 *******************************************************************************************/
 
@@ -55,18 +55,6 @@ enum sensor_id_t : uint16_t
     /**
      * 200 - SPEED/POSITION SENSORS
      */
-	TEST_SENSOR_10                  = 256,	//NumBytes: 4
-	TEST_SENSOR_11                  = 257,	//NumBytes: 4
-	TEST_SENSOR_12                  = 258,	//NumBytes: 4
-	TEST_SENSOR_13                  = 259,	//NumBytes: 4
-	TEST_SENSOR_14                  = 260,	//NumBytes: 4
-	TEST_SENSOR_15                  = 261,	//NumBytes: 4
-	TEST_SENSOR_16                  = 262,	//NumBytes: 4
-	TEST_SENSOR_17                  = 263,	//NumBytes: 4
-	TEST_SENSOR_18                  = 264,	//NumBytes: 4
-	TEST_SENSOR_19                  = 265,	//NumBytes: 4
-	TEST_SENSOR_20                  = 266,	//NumBytes: 4
-	TEST_SENSOR_21                  = 267,	//NumBytes: 4
 	SPEED_GENERIC                   = 200,	//NumBytes: 2
 	POSITION_GENERIC                = 201,	//NumBytes: 4
 	SPEED_POSITION_GENERIC4         = 202,	//NumBytes: [4, 4] - Speed in RPM and position in ticks (4ppr sensor)
@@ -81,6 +69,8 @@ enum sensor_id_t : uint16_t
 	SPEED_SECONDARY30_RPM           = 211,	//NumBytes: 2 - Speed in RPM (30ppr sensor)
 	SPEED_DYNOENGINE600_RPM         = 212,	//NumBytes: [4, 2] - Speed in RPM and position in ticks (600ppr sensor)
 	SPEED_DYNOSECONDARY30_RPM       = 213,	//NumBytes: [4, 2] - Speed in RPM and position in ticks (600ppr sensor)
+	SPEED_2021CAR_ENGINE600_RPM     = 214,	//NumBytes: [4, 2] - Speed in RPM and position in ticks (600ppr sensor)
+	SPEED_2021CAR_SECONDARY30_RPM   = 215,	//NumBytes: [4, 2] - Speed in RPM and position in ticks (600ppr sensor)
 
     /**
      * 300 - FORCE/PRESSURE SENSORS
