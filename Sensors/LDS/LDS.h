@@ -7,7 +7,7 @@
  * A library to work with LDS sensors and measures the linear position
  * 
  * ------ Constructor ------
- * LDS<DataType> lds(full_scale_range, is_reversed);
+ * LDS<DataType> lds(full_scale_range, is_reversed = false);
  * 
  * where:
  * DataType         -> Either uint8_t, uint16_t, uint32_t, or float
@@ -15,7 +15,7 @@
  * 
  * full_scale_range -> The range of the LDS in mm
  * is_reversed      -> If the position is increasing when the LDS is being retracted, then setting is_reversed will make the
- *                     position increase when the LDS is being extended
+ *                     position increase when the LDS is being extended. Defaults to false.
  * 
  * ------ Usage ------
  * adc.attach_sensor(lds, port);
@@ -30,6 +30,7 @@
 
 #include "Potentiometer.h"
 
-typedef Potentiometer LDS;
+template<typename T>
+using LDS = Potentiometer<T>;
 
 #endif

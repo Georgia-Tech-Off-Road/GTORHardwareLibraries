@@ -38,6 +38,34 @@ public:
         _data.temperature = temp.temperature;
     }
 
+    float get_accel_x() {
+        return _data.acceleration.x;
+    }
+
+    float get_accel_y() {
+        return _data.acceleration.y;
+    }
+
+    float get_accel_z() {
+        return _data.acceleration.z;
+    }
+
+    float get_gyro_x() {
+        return _data.gyro.x;
+    }
+
+    float get_gyro_y() {
+        return _data.gyro.y;
+    }
+
+    float get_gyro_z() {
+        return _data.gyro.z;
+    }
+
+    float get_temp() {
+        return _data.temperature;
+    }
+
     void pack(byte* pack){
         float* p = (float*) pack;
         *(p++) = _data.acceleration.x;
