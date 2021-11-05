@@ -46,22 +46,7 @@ void ADS8332::begin()
 
 void ADS8332::reset()
 {
-	setCommandBuffer(CommandRegister::WriteConfig);
-	setConfiguration(ConfigRegisterMap::ChannelSelectMode, false);
-	setConfiguration(ConfigRegisterMap::ClockSource, true);
-	setConfiguration(ConfigRegisterMap::TriggerMode, true);
-	setConfiguration(ConfigRegisterMap::SampleRate, true);
-	setConfiguration(ConfigRegisterMap::EOCINTPolarity, true);
-	setConfiguration(ConfigRegisterMap::EOCINTMode, true);
-	setConfiguration(ConfigRegisterMap::ChainMode, true);
-	setConfiguration(ConfigRegisterMap::AutoNap, true);
-	setConfiguration(ConfigRegisterMap::Nap, true);
-	setConfiguration(ConfigRegisterMap::Sleep, true);
-	setConfiguration(ConfigRegisterMap::TAG, true);
-	setConfiguration(ConfigRegisterMap::Reset, false);
-	//Serial.println(CommandBuffer,BIN);
-	sendCommandBuffer(true);
-	//sendWriteCommandBuffer();
+	begin();
 }
 
 void ADS8332::setConfiguration(ConfigRegisterMap Option, bool Setting)
@@ -151,8 +136,51 @@ uint8_t ADS8332::getSample(float* WriteVariable, uint8_t UseChannel)
 uint8_t ADS8332::getSample(uint16_t* WriteVariable, uint8_t UseChannel)
 {
 	Channel = (uint8_t)( constrain(UseChannel,0,7) );
+
+	//because of the limitations of the ADS8332, we must
+	//disable auto trigger before changing the channel
+
+	if (!manual_trigger) {
+		setCommandBuffer(CommandRegister::WriteConfig);
+		setConfiguration(ConfigRegisterMap::ChannelSelectMode, false);
+		setConfiguration(ConfigRegisterMap::ClockSource, true);
+		setConfiguration(ConfigRegisterMap::TriggerMode, true);
+		setConfiguration(ConfigRegisterMap::SampleRate, true);
+		setConfiguration(ConfigRegisterMap::EOCINTPolarity, true);
+		setConfiguration(ConfigRegisterMap::EOCINTMode, true);
+		setConfiguration(ConfigRegisterMap::ChainMode, true);
+		setConfiguration(ConfigRegisterMap::AutoNap, true);
+		setConfiguration(ConfigRegisterMap::Nap, true);
+		setConfiguration(ConfigRegisterMap::Sleep, true);
+		setConfiguration(ConfigRegisterMap::TAG, true);
+		setConfiguration(ConfigRegisterMap::Reset, true);
+		sendCommandBuffer(true);
+	}
+	
 	setSampleChannel();
-	sendCommandBuffer(true);
+	// SPI.beginTransaction(ConnectionSettings);
+	// digitalWrite(SelectPin, LOW);
+	// SPI.transfer16(0b0010111111111111);
+	// digitalWrite(SelectPin, HIGH);
+	// SPI.endTransaction();
+
+	if (!manual_trigger) {
+		setCommandBuffer(CommandRegister::WriteConfig);
+		setConfiguration(ConfigRegisterMap::ChannelSelectMode, false);
+		setConfiguration(ConfigRegisterMap::ClockSource, true);
+		setConfiguration(ConfigRegisterMap::TriggerMode, false);
+		setConfiguration(ConfigRegisterMap::SampleRate, true);
+		setConfiguration(ConfigRegisterMap::EOCINTPolarity, true);
+		setConfiguration(ConfigRegisterMap::EOCINTMode, true);
+		setConfiguration(ConfigRegisterMap::ChainMode, true);
+		setConfiguration(ConfigRegisterMap::AutoNap, true);
+		setConfiguration(ConfigRegisterMap::Nap, true);
+		setConfiguration(ConfigRegisterMap::Sleep, true);
+		setConfiguration(ConfigRegisterMap::TAG, true);
+		setConfiguration(ConfigRegisterMap::Reset, true);
+		sendCommandBuffer(true);
+	}
+
 	delayMicroseconds(2);
 	return getSampleInteger(WriteVariable);
 }
