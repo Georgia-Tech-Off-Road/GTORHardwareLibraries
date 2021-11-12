@@ -2,7 +2,11 @@
 #define SDCOMMS_H
 
 #include "Comms.h"
-#include <SD.h>
+// #include "SD.h"
+#include "SdFat.h"
+#include <TimeLib.h>
+
+extern SdFs sd;
 
 class SDComms : public Comms {
 private:
@@ -14,9 +18,10 @@ private:
 
     void read_packet();
     void send_packet();
+    void packetize();
     
 public:
-    SDComms(uint8_t port);
+    SDComms(uint8_t port = -1);
     void begin(const char* filename);
     const uint8_t get_port();
 };

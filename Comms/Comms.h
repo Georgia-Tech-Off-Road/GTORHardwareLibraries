@@ -43,6 +43,7 @@ public:
     uint8_t get_expected_receive_bytes();
     uint8_t get_expected_transmit_bytes();
 
+    friend class SDComms;
     friend class SerialComms;
 };
 
