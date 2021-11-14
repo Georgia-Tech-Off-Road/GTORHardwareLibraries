@@ -20,6 +20,50 @@ ADS8332::ADS8332(uint8_t _SelectPin, uint8_t _ConvertPin, uint8_t _EOCPin = -1)
 	manual_trigger = false;
 }
 
+void ADS8332::attach_sensor(BaseAnalogSensor& sensor, uint8_t port)
+{
+	// Check to see if something is already attached on the port.
+    for (auto it = _sensors.begin(); it != _sensors.end(); it++){
+        if((*it)->get_port() == port)
+            return;
+    }
+    sensor.set_port(port);
+    sensor.set_vrange(0, 3.3);
+    sensor.set_adc(this);
+    _sensors.push_back(&sensor);
+}
+
+void ADS8332::update_sensors()
+{
+	for(auto it = _sensors.begin(); it != _sensors.end(); ++it){
+		float a = 0;
+		getSample(&a, (*it)->get_port());
+		(*it)->set_raw(a / get_max());
+	}
+}
+
+void ADS8332::update_sensor(BaseAnalogSensor& sensor)
+{
+	float a = 0;
+	getSample(&a, sensor.get_port());
+    sensor.set_raw(a / get_max());
+}
+
+void ADS8332::update_sensor(uint8_t port)
+{
+	for (auto it = _sensors.begin(); it != _sensors.end(); it++){
+        if((*it)->get_port() == port) {
+            update_sensor(*(*it));
+            return;
+        }
+    }
+}
+
+uint32_t ADS8332::get_max()
+{
+	return 65535;
+}
+
 void ADS8332::setCommandBuffer(CommandRegister Command)
 {
 	CommandBuffer = 0;

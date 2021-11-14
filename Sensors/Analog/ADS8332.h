@@ -5,9 +5,15 @@
 
 #include <SPI.h>
 
-class ADS8332
+class ADS8332 : public ADC
 {
 	public:
+		void attach_sensor(BaseAnalogSensor& sensor, uint8_t port);
+		void update_sensors();
+		void update_sensor(BaseAnalogSensor& sensor);
+		void update_sensor(uint8_t port);
+		uint32_t get_max();
+		
 		enum class CommandRegister : uint8_t
 		{
 			SelectCh0 = 0,
