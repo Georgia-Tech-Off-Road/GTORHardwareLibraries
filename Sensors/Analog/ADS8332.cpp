@@ -36,9 +36,9 @@ void ADS8332::attach_sensor(BaseAnalogSensor& sensor, uint8_t port)
 void ADS8332::update_sensors()
 {
 	for(auto it = _sensors.begin(); it != _sensors.end(); ++it){
-		float a = 0;
+		uint16_t a = 0;
 		getSample(&a, (*it)->get_port());
-		(*it)->set_raw(a / get_max());
+		(*it)->set_raw(a / (float)get_max());
 	}
 }
 

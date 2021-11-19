@@ -2,6 +2,7 @@
 #define ADS8332_h
 
 #include "Arduino.h"
+#include "ADC.h"
 
 #include <SPI.h>
 
