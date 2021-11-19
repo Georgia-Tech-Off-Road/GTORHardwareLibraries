@@ -9,14 +9,17 @@
 class ADS8332 : public ADC
 {
 	public:
+		ADS8332(uint8_t SelectPin, uint8_t ConvertPin, uint8_t EOCPin);
+		ADS8332(uint8_t _SelectPin, uint8_t _ConvertPin);
 		void attach_sensor(BaseAnalogSensor& sensor, uint8_t port);
 		void update_sensors();
 		void update_sensor(BaseAnalogSensor& sensor);
 		void update_sensor(uint8_t port);
 		uint32_t get_max();
-		
-		enum class CommandRegister : uint8_t
-		{
+		void begin();
+		void reset();
+	private:
+		enum class CommandRegister : uint8_t {
 			SelectCh0 = 0,
 			SelectCh1 = 1,
 			SelectCh2 = 2,
@@ -31,8 +34,7 @@ class ADS8332 : public ADC
 			WriteConfig = 14,
 			DefaultConfig = 15,
 		};
-		enum class ConfigRegisterMap : uint8_t
-		{
+		enum class ConfigRegisterMap : uint8_t {
 			ChannelSelectMode = 11, //0 => manual, 1 => automatic, default => 1
 			ClockSource = 10, //0 => SPI SCLK, 1 => internal clock, default => 1
 			TriggerMode = 9, //0 => auto trigger, 1 => CONVST trigger, default => 1
@@ -46,32 +48,11 @@ class ADS8332 : public ADC
 			TAG = 1, //0 => Tag disabled, 1=> tag enabled, default => 1
 			Reset = 0, //0 => reset, 1 => normal, default => 1
 		};
-		/*enum class ConfigRegisterMap : uint8_t
-		{
-			ChannelSelectMode = 0, //0 => manual, 1 => automatic, default => 1
-			ClockSource = 1, //0 => SPI SCLK, 1 => internal clock, default => 1
-			TriggerMode = 2, //0 => auto trigger, 1 => CONVST trigger, default => 1
-			SampleRate = 3, //0=> 500kSPS, 1=> 250kSPS, default => 1
-			EOCINTPolarity = 4, //0 => EOCINT active high, 1 => EOCINT active low, default 1
-			EOCINTMode = 5, //0 => pin used as INT, 1 => pin used as EOC, default 1
-			ChainMode = 6, //0 => use CDI input, 1 => use EOCINT, default 1
-			AutoNap = 7, //0 => Auto nap enabled, 1 => auto nap disabled, default 1
-			Nap = 8, //0 => Enable nap, 1 => wake up, default => 1
-			Sleep = 9, //0 => enable sleep, 1=> wake up, default => 1
-			TAG = 10, //0 => Tag disabled, 1=> tag enabled, default => 1
-			Reset = 11, //0 => reset, 1 => normal, default => 1
-		};*/
-		ADS8332(uint8_t SelectPin, uint8_t ConvertPin, uint8_t EOCPin);
-		ADS8332(uint8_t _SelectPin, uint8_t _ConvertPin);
-		void begin();
-		void reset();
-		uint8_t getSample(float* WriteVariable, uint8_t UseChannel);
 		uint8_t getSample(uint16_t* WriteVariable, uint8_t UseChannel);
-		uint16_t getConfig();
 		void setVref(float NewVref);
 		float getVref();
 		SPISettings* GetSPISettings();
-	private:
+		uint16_t getConfig();
 		float convertVrefRange(int16_t Value);
 		uint16_t sendManualSingle(uint8_t Channel);
 		void setCommandBuffer(CommandRegister Command);
