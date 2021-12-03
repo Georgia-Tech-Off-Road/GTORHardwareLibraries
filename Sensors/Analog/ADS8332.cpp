@@ -195,7 +195,7 @@ uint8_t ADS8332::getSample(uint16_t* WriteVariable, uint8_t UseChannel) {
 		sendCommandBuffer(true);
 	}
 
-	delayMicroseconds(2);
+	delayMicroseconds(3);
 	return getSampleInteger(WriteVariable);
 }
 
@@ -264,7 +264,6 @@ uint8_t ADS8332::getSampleInteger(uint16_t* WriteVariable) {
 	starttime = micros();
 	SPI.beginTransaction(ConnectionSettings);
 	while(manual_trigger && keepwaiting) {
-		Serial.print(manual_trigger);
 		if (digitalRead(EOCPin) == 1) {
 			keepwaiting = false;
 		}
@@ -298,9 +297,6 @@ uint8_t ADS8332::getSampleInteger(uint16_t* WriteVariable) {
 			Serial.printf("Expected channel %d but received channel %d\n", Channel, ChannelTag);
 			if ( (micros() - starttime) > EOCTimeout) {
 				return 3;
-			}
-			else {
-				setSampleChannel();
 			}
 		}
 	}
