@@ -34,11 +34,38 @@
 #ifndef SpeedSensor_h_
 #define SpeedSensor_h_
 
+/**
+ * SpeedSensor.h
+ * A library to work with speed sensors that measure both speed and position.
+ * 
+ * ------ Constructor ------
+ * SpeedSensor<DataType> speedsensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255)
+ * 
+ * DataType         -> Either POSITION_ONLY, SPEED_ONLY, or POSITION_AND_SPEED
+ *  
+ * ppr              -> Pulses per revolution of the speed sensor used
+ * pin1             -> Pin for single input speed sensor
+ * pin2             -> Secondary pin for quadriture speed sensor (default is none)
+ * 
+ * ------ Usage ------
+ * DataType speedsensor_data = speedsensor.get_data();
+ *      - Returns whatever DataType used in declaration (returns struct if it is POSITION_AND_SPEED)
+ *      - speedsensor.get_position() and speedsensor.get_speed() also work to get individual values
+ * 
+ * comms.attach_output_sensor(speedsensor, sensor_id)
+ * 
+ * speedsensor.update();
+ *      - This will update the sensor to be used by the communication utility
+ */
 
 #include "Arduino.h"
 #include "utility/direct_pin_read.h"
 #include <Block.h>
 #include <cmath>
+
+#define POSITION_ONLY uint32_t
+#define SPEED_ONLY uint16_t
+#define POSITION_AND_SPEED speed_sensor_data_t
 
 #if defined(ENCODER_USE_INTERRUPTS) || !defined(ENCODER_DO_NOT_USE_INTERRUPTS)
 #define ENCODER_USE_INTERRUPTS
@@ -65,7 +92,8 @@ typedef struct {
     uint32_t               num_ticks;
 } Encoder_internal_state_t;
 
-class SpeedSensor : public Block<speed_sensor_data_t>
+template <typename DataType>
+class SpeedSensor : public Block<DataType>
 {
 public:
     // Set pin2 to 255 if it is not used
@@ -137,19 +165,32 @@ public:
         interrupts();
         return rpm;
     }
-    // TODO: Add if statements to make these be able to only send speed or position
     void update(){
-        _data.position = get_position();
-        _data.speed = get_speed();
+        if (std::is_same<DataType, POSITION_AND_SPEED>::value){
+            _data.position = get_position();
+            _data.speed = get_speed();
+        } else if (std::is_same<DataType, POSITION_ONLY>::value){
+            _data = get_position();
+        } else if (std::is_same<DataType, SPEED_ONLY>::value){
+            _data = get_speed();
+        }
     }
 
     void pack   (uint8_t* pack){
-        *((uint32_t *) pack) = _data.position;
-        *((uint16_t *) (pack + 4)) = _data.speed;
+        if (std::is_same<DataType, POSITION_AND_SPEED>::value){
+            *((uint32_t *) pack) = _data.position;
+            *((uint16_t *) (pack + 4)) = _data.speed;
+        } else {
+            pack = _data;
+        }
     }
     void unpack (const uint8_t* pack){
-        _data.position = *((uint32_t *) pack);
-        _data.speed = *((uint16_t *) (pack + 4));
+        if (std::is_same<DataType, POSITION_AND_SPEED>::value){
+            _data.position = *((uint32_t *) pack);
+            _data.speed = *((uint16_t *) (pack + 4));
+        } else {
+            _data = pack;
+        }
     }
 
 private:

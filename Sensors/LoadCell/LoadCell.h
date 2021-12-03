@@ -7,7 +7,7 @@
  * A library to work with load cells and measures strain
  * 
  * ------ Constructor ------
- * LoadCell<DataType> load_cell(full_scale_range, is_reversed = false);
+ * LoadCell<DataType> load_cell(uint16_t full_scale_range, bool is_reversed);
  * 
  * where:
  * DataType         -> Either uint8_t, uint16_t, uint32_t, or float

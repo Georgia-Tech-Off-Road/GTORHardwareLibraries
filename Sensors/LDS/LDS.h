@@ -7,9 +7,8 @@
  * A library to work with LDS sensors and measures the linear position
  * 
  * ------ Constructor ------
- * LDS<DataType> lds(full_scale_range, is_reversed = false);
+ * LDS<DataType> lds(uint16_t full_scale_range, bool is_reversed = false);
  * 
- * where:
  * DataType         -> Either uint8_t, uint16_t, uint32_t, or float
  *      - In most cases, uint8_t is probably fine since our LDS sensors are usually less than 255mm in stroke length anyways
  * 

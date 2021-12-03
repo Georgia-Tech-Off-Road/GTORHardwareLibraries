@@ -6,9 +6,8 @@
  * A library to work with potentiometer sensors and measures the angular position
  * 
  * ------ Constructor ------
- * Potentiometer<DataType> pot(full_scale_range, is_reversed);
+ * Potentiometer<DataType> pot(uint16_t full_scale_range, bool is_reversed);
  * 
- * where:
  * DataType         -> Either uint8_t, uint16_t, uint32_t, or float
  *      - In most cases, uint16 is probably fine since a lot of our potentiometers are 270 degrees
  * 
@@ -19,6 +18,9 @@
  * ------ Usage ------
  * adc.attach_sensor(pot, port);
  *      - This will attach the potentiometer sensor to an ADC that it can be read from
+ * 
+ * comms.attach_output_block(pot, sensor_id)
+ *      - Attaches potentiometer to comms utility
  * 
  * DataType pot_data = pot.get_data();
  *      - This will read the data from the ADC that the potentiometer is attached to and return it
