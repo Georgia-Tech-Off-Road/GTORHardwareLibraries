@@ -31,22 +31,17 @@
 
 template <typename DataType>
 class VoltageSensor : public AnalogSensor<DataType> {
-private:
-    uint16_t _full_scale_range;
-
 public:
     /**
      * Constructor for the VoltageSensor sensor
      */
-    VoltageSensor(uint16_t full_scale_range);
+    VoltageSensor();
     void set_raw(float raw);
 
 };
 
 template class VoltageSensor<uint8_t>;
-template class VoltageSensor<uint16_t>;
-template class VoltageSensor<uint32_t>;
+template class VoltageSensor<int8_t>;
 template class VoltageSensor<float>;
-template class VoltageSensor<double>;
 
 #endif

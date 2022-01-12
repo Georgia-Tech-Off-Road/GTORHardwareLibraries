@@ -5,7 +5,7 @@
  * A library to work with LMT87 sensors and measures the temperature
  * 
  * ------ Constructor ------
- * LMT87Sensor temp();
+ * LMT87Sensor temp;
  * 
  * where:
  * no input needed

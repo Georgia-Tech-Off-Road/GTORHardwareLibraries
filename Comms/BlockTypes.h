@@ -1,6 +1,9 @@
 template class Block<uint8_t>;
 template class Block<uint16_t>;
 template class Block<uint32_t>;
+template class Block<int8_t>;
+template class Block<int16_t>;
+template class Block<int32_t>;
 template class Block<float>;
 template class Block<double>;
 
