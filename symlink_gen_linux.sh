@@ -1,10 +1,15 @@
 find . -maxdepth 1 -mindepth 1 -type d \
 		-not -path "./ExternalLibraries" \
+		-not -path "./ControlLibraries" \
 		-not -path "./Sensors" \
 		-not -path "./Utility" \
 		-exec ln -sfn $PWD/'{}' ~/Arduino/libraries/'{}' \;
 
 cd ExternalLibraries
+find . -maxdepth 1 -mindepth 1 -type d \
+		-exec ln -sfn $PWD/'{}' ~/Arduino/libraries/'{}' \;
+
+cd ControlLibraries
 find . -maxdepth 1 -mindepth 1 -type d \
 		-exec ln -sfn $PWD/'{}' ~/Arduino/libraries/'{}' \;
 		
