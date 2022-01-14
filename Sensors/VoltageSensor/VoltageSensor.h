@@ -2,28 +2,24 @@
 #define VOLTAGESENSOR_H
 
 /**
- * Potentiometer.h
- * A library to work with potentiometer sensors and measures the angular position
+ * VoltageSensor.h
+ * A library to work with Voltage sensors
  * 
  * ------ Constructor ------
- * Potentiometer<DataType> pot(full_scale_range, is_reversed);
+ * VoltageSensor<DataType> voltSensor();
  * 
  * where:
- * DataType         -> Either uint8_t, uint16_t, uint32_t, or float
- *      - In most cases, uint16 is probably fine since a lot of our potentiometers are 270 degrees
- * 
- * full_scale_range -> The full scale range in degrees of the potentiometer being used
- * is_reversed      -> If the potentiometer is increasing clockwise then setting is_reversed will make
- *                     it increase counterclockwise
+ * DataType         -> Either uint8_t, int8_t, or float
+ *      - In most cases, float
  * 
  * ------ Usage ------
- * adc.attach_sensor(pot, port);
- *      - This will attach the potentiometer sensor to an ADC that it can be read from
+ * adc.attach_sensor(voltSensor, port);
+ *      - This will attach the VoltageSensor to an ADC that it can be read from
  * 
- * DataType pot_data = pot.get_data();
- *      - This will read the data from the ADC that the potentiometer is attached to and return it
+ * DataType voltSensor_data = voltSensor.get_data();
+ *      - This will read the data from the ADC that the voltage sensor is attached to and return it
  * 
- * pot.update();
+ * voltSensor.update();
  *      - This will update the sensor to be used by the communication utility
  */
 
