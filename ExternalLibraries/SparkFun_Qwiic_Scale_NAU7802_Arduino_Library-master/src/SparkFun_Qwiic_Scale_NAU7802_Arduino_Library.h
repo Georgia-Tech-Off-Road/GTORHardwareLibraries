@@ -25,7 +25,7 @@
 
 #include "Arduino.h"
 #include <Wire.h>
-#include <Sensor.h>
+#include <Block.h>
 
 //Register Map
 typedef enum
@@ -162,13 +162,10 @@ typedef enum
   NAU7802_CAL_FAILURE = 2,
 } NAU7802_Cal_Status;
 
-class NAU7802 : public Sensor<float>
+class NAU7802 : public Block<float>
 {
 public:
-  NAU7802()
-  {
-    _pack_bytes = 4;
-  }                                                        //Default constructor
+  NAU7802(){}                                                        //Default constructor
   bool begin(TwoWire &wirePort = Wire, bool reset = true); //Check communication and initialize sensor
   bool isConnected();                                      //Returns true if device acks at the I2C address
 
@@ -242,25 +239,8 @@ public:
   uint8_t getRegister(uint8_t registerAddress);             //Get contents of a register
   bool setRegister(uint8_t registerAddress, uint8_t value); //Send a given value to be written to given address. Return true if successful
 
-  const float &get_data()
-  {
-    if (_type == ACTIVE)
-    {
-      if (this->available())
-      {
-        _data = this->getWeight(true, 1);
-      }
-    }
-    return _data;
-  }
-
-  void pack(byte *pack)
-  {
-    *((float *)pack) = get_data();
-  }
-  void unpack(const byte *pack)
-  {
-    _data = *((float *)pack);
+  void update(){
+    this->set_data(this->getWeight(true,1));
   }
 
 private:
