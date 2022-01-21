@@ -1,5 +1,5 @@
 #ifndef LMT87SENSOR_H
-#define LMT87ENSOR_H
+#define LMT87SENSOR_H
 /**
  * LMT87Sensor.h
  * A library to work with LMT87 sensors and measures the temperature
