@@ -1,14 +1,14 @@
-#include "LMT87Sensor.h"
+#include "VoltageSensor.h"
 #include "TeensyADC.h"
 #include "ClockTimer.h"
-#define TEENSY_PORT 14
+#define TEENSY_PORT A2
 
-LMT87Sensor temp;
+VoltageSensor<float> volt;
 TeensyADC tadc;
 ClockTimerf serialTimer(100);
 void setup() {
   // put your setup code here, to run once:
-  tadc.attach_sensor(temp, TEENSY_PORT);
+  tadc.attach_sensor(volt, TEENSY_PORT);
   Serial.begin(115200);
   delay(100);
   
@@ -17,11 +17,11 @@ void setup() {
 }
 
 void loop() {
-  temp.update();
+  volt.update();
   if(serialTimer.ready(micros())){
-    Serial.print("Temperature is: ");
-    Serial.print(temp.get_data());
-    Serial.println(" degrees celsius");
+    Serial.print("Voltage is: ");
+    Serial.print(volt.get_data());
+    Serial.println(" Volts");
     
   }
 

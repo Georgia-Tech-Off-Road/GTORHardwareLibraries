@@ -28,12 +28,7 @@
 template <typename DataType>
 class VoltageSensor : public AnalogSensor<DataType> {
 public:
-    /**
-     * Constructor for the VoltageSensor sensor
-     */
-    VoltageSensor();
     void set_raw(float raw);
-
 };
 
 template class VoltageSensor<uint8_t>;
