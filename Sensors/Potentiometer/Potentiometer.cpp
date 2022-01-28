@@ -7,8 +7,7 @@ Potentiometer<DataType>::Potentiometer(uint16_t full_scale_range, bool is_revers
 }
     
 template <typename DataType>
-void Potentiometer<DataType>::set_raw(float raw) {
-    this->_raw = raw;
+void Potentiometer<DataType>::update_data() {
     if (std::is_same<DataType, uint32_t>::value || std::is_same<DataType, uint16_t>::value || std::is_same<DataType, uint8_t>::value){
         // If DataType is uint32_t, uint16_t, or uint8_t, then return the number of degrees of the potentiometer from 0-255, 0-65535,
         // or 0-4294967295 respectively

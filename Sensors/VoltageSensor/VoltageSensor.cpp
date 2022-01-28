@@ -2,7 +2,6 @@
 
     
 template <typename DataType>
-void VoltageSensor<DataType>::set_raw(float raw) {
-    this->_raw = raw;
+void VoltageSensor<DataType>::update_data() {
     this->set_data(this->get_voltage());
 }

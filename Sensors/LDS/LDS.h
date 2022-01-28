@@ -1,7 +1,3 @@
-#ifndef LDS_H
-#define LDS_H
-
-
 /**
  * LDS.h
  * A library to work with LDS sensors and measures the linear position
@@ -26,6 +22,9 @@
  * lds.update();
  *      - This will update the sensor to be used by the communication utility
  */
+
+#ifndef LDS_H
+#define LDS_H
 
 #include "Potentiometer.h"
 

@@ -1,6 +1,3 @@
-#ifndef POTENTIOMETER_H
-#define POTENTIOMETER_H
-
 /**
  * Potentiometer.h
  * A library to work with potentiometer sensors and measures the angular position
@@ -29,6 +26,9 @@
  *      - This will update the sensor to be used by the communication utility
  */
 
+#ifndef POTENTIOMETER_H
+#define POTENTIOMETER_H
+
 #include "AnalogSensor.h"
 
 template <typename DataType>
@@ -42,7 +42,7 @@ public:
      * Constructor for the Potentiometer sensor
      */
     Potentiometer(uint16_t full_scale_range, bool is_reversed = false);
-    void set_raw(float raw);
+    void update_data();
 
 };
 

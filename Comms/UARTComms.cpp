@@ -13,7 +13,7 @@ UARTComms::UARTComms(HardwareSerial &port) :
 /*
  * @brief Initializes the hardware for the Serial Port
  */
-void UARTComms::begin(uint32_t baud){
+void UARTComms::begin(uint32_t baud=230400){
     _baud = baud;
     _port->begin(_baud);
 }

@@ -1,5 +1,3 @@
-#ifndef LMT87SENSOR_H
-#define LMT87SENSOR_H
 /**
  * LMT87Sensor.h
  * A library to work with LMT87 sensors and measures the temperature
@@ -21,20 +19,14 @@
  *      - This will update the sensor to be used by the communication utility
  */
 
+#ifndef LMT87SENSOR_H
+#define LMT87SENSOR_H
 
 #include "AnalogSensor.h"
 
 class LMT87Sensor : public AnalogSensor<float> {
-
-
 public:
-    /**
-     * Constructor for the temperature sensor
-     */
-    void set_raw(float raw);
-
+    void update_data(float raw);
 };
-
-
 
 #endif
