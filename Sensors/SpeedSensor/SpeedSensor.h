@@ -1,3 +1,27 @@
+/**
+ * SpeedSensor.h
+ * A library to work with speed sensors that measure both speed and position.
+ * 
+ * ------ Constructor ------
+ * SpeedSensor speedsensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255, uint8_t flag)
+ *  
+ * ppr              -> Pulses per revolution of the speed sensor used
+ * pin1             -> Pin for single input speed sensor
+ * pin2             -> Secondary pin for quadriture speed sensor (default is none)
+ * flag             -> Defines what data values to save and send (0 = POSITION_ONLY, 1 = SPEED_ONLY, or 2 = POSITION_AND_SPEED)
+ * 
+ * ------ Usage ------
+ * DataType speedsensor_data = speedsensor.get_data();
+ *      - Returns whatever DataType used in declaration (returns struct if it is POSITION_AND_SPEED)
+ *      - speedsensor.get_position() and speedsensor.get_speed() also work to get individual values
+ * 
+ * comms.attach_output_sensor(speedsensor, sensor_id)
+ * 
+ * speedsensor.update();
+ *      - This will update the sensor to be used by the communication utility
+ */
+
+
 /* SpeedSensor Library, for measuring both the speed and position of
  * single input or quadrature speed sensors.
  * Based on the Encoder Library written by Paul Stoffregen.
@@ -33,29 +57,6 @@
 
 #ifndef SpeedSensor_h_
 #define SpeedSensor_h_
-
-/**
- * SpeedSensor.h
- * A library to work with speed sensors that measure both speed and position.
- * 
- * ------ Constructor ------
- * SpeedSensor speedsensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255, uint8_t flag)
- *  
- * ppr              -> Pulses per revolution of the speed sensor used
- * pin1             -> Pin for single input speed sensor
- * pin2             -> Secondary pin for quadriture speed sensor (default is none)
- * flag             -> Defines what data values to save and send (0 = POSITION_ONLY, 1 = SPEED_ONLY, or 2 = POSITION_AND_SPEED)
- * 
- * ------ Usage ------
- * DataType speedsensor_data = speedsensor.get_data();
- *      - Returns whatever DataType used in declaration (returns struct if it is POSITION_AND_SPEED)
- *      - speedsensor.get_position() and speedsensor.get_speed() also work to get individual values
- * 
- * comms.attach_output_sensor(speedsensor, sensor_id)
- * 
- * speedsensor.update();
- *      - This will update the sensor to be used by the communication utility
- */
 
 #include "Arduino.h"
 #include "utility/direct_pin_read.h"

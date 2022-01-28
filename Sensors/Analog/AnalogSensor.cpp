@@ -25,6 +25,10 @@ float BaseAnalogSensor::get_raw() {
 	return _raw;
 }
 
+void BaseAnalogSensor::set_raw(float raw) {
+	_raw = raw;
+}
+
 float BaseAnalogSensor::get_voltage() {
 	return _vmin + _raw * (_vmax - _vmin);
 }

@@ -1,7 +1,3 @@
-#ifndef BRAKE_PRESSURE_SENSOR_H
-#define BRAKE_PRESSURE_SENSOR_H
-#include "AnalogSensor.h"
-
 /**
  * BrakePressureSensor.h
  * A library to work with MLH02KPSB06A sensors and measure the brake pressure in PSI
@@ -23,9 +19,14 @@
  *      - This will update the sensor to be used by the communication utility
  */
 
+#ifndef BRAKE_PRESSURE_SENSOR_H
+#define BRAKE_PRESSURE_SENSOR_H
+
+#include "AnalogSensor.h"
+
 class BrakePressureSensor : public AnalogSensor<float> {
     public:
-        void set_raw(float raw);
+        void update_data();
 };
 
 #endif
