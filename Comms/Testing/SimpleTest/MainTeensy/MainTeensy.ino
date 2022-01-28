@@ -53,7 +53,7 @@ void loop() {
   ts_dash.update();
   
   uart1.update();
-  serial.update_monitor();
+  serial.update();
   wireless.update();
   
 // uint32_t t = micros();

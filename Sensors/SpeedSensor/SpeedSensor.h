@@ -34,11 +34,37 @@
 #ifndef SpeedSensor_h_
 #define SpeedSensor_h_
 
+/**
+ * SpeedSensor.h
+ * A library to work with speed sensors that measure both speed and position.
+ * 
+ * ------ Constructor ------
+ * SpeedSensor speedsensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255, uint8_t flag)
+ *  
+ * ppr              -> Pulses per revolution of the speed sensor used
+ * pin1             -> Pin for single input speed sensor
+ * pin2             -> Secondary pin for quadriture speed sensor (default is none)
+ * flag             -> Defines what data values to save and send (0 = POSITION_ONLY, 1 = SPEED_ONLY, or 2 = POSITION_AND_SPEED)
+ * 
+ * ------ Usage ------
+ * DataType speedsensor_data = speedsensor.get_data();
+ *      - Returns whatever DataType used in declaration (returns struct if it is POSITION_AND_SPEED)
+ *      - speedsensor.get_position() and speedsensor.get_speed() also work to get individual values
+ * 
+ * comms.attach_output_sensor(speedsensor, sensor_id)
+ * 
+ * speedsensor.update();
+ *      - This will update the sensor to be used by the communication utility
+ */
 
 #include "Arduino.h"
 #include "utility/direct_pin_read.h"
 #include <Block.h>
 #include <cmath>
+
+#define POSITION_ONLY 0
+#define SPEED_ONLY 1
+#define POSITION_AND_SPEED 2
 
 #if defined(ENCODER_USE_INTERRUPTS) || !defined(ENCODER_DO_NOT_USE_INTERRUPTS)
 #define ENCODER_USE_INTERRUPTS
@@ -69,7 +95,7 @@ class SpeedSensor : public Block<speed_sensor_data_t>
 {
 public:
     // Set pin2 to 255 if it is not used
-	SpeedSensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255) {
+	SpeedSensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255, uint8_t flag = 2) {
         _encoder.ppr = ppr;
         _encoder.prev_update_time = micros();
         _encoder.prev_tick_time = micros();
@@ -101,7 +127,15 @@ public:
         attach_interrupt(pin1, &_encoder, CHANGE);
         if (pin2 != 255) attach_interrupt(pin2, &_encoder, CHANGE);
 
-        _packlen = 6;
+        _flag = flag;
+
+        if (_flag == POSITION_AND_SPEED){ // Position and speed
+            set_packlen(sizeof(uint_fast16_t) + sizeof(uint_fast32_t));
+        } else if (_flag == SPEED_ONLY){ // Just speed
+            set_packlen(sizeof(uint_fast16_t));
+        } else if (_flag == POSITION_ONLY){ // Just position
+            set_packlen(sizeof(uint_fast32_t));
+        }
 	}
 
     inline int32_t get_position() {
@@ -137,23 +171,41 @@ public:
         interrupts();
         return rpm;
     }
-    // TODO: Add if statements to make these be able to only send speed or position
     void update(){
-        _data.position = get_position();
-        _data.speed = get_speed();
+        if (_flag == POSITION_AND_SPEED){
+            this->_data.position = get_position();            
+            this->_data.speed = get_speed();
+        } else if (_flag == SPEED_ONLY){
+            this->_data.speed = get_speed();
+        } else if (_flag == POSITION_ONLY){
+            this->_data.position = get_position();
+        }
     }
 
     void pack   (uint8_t* pack){
-        *((uint32_t *) pack) = _data.position;
-        *((uint16_t *) (pack + 4)) = _data.speed;
+        if (_flag == POSITION_AND_SPEED){
+            *((uint32_t *) pack) = this->_data.position;
+            *((uint16_t *) (pack + 4)) = this->_data.speed;
+        } else if (_flag == SPEED_ONLY){
+            *((uint16_t *) pack) = this->_data.speed;
+        } else if (_flag == POSITION_ONLY){
+            *((uint32_t *) pack) = this->_data.position;
+        }
     }
     void unpack (const uint8_t* pack){
-        _data.position = *((uint32_t *) pack);
-        _data.speed = *((uint16_t *) (pack + 4));
+        if (_flag == POSITION_AND_SPEED){
+            this->_data.position = *((uint32_t *) pack);
+            this->_data.speed = *((uint16_t *) (pack + 4));
+        } else if (_flag == SPEED_ONLY){
+            this->_data.speed = *((uint16_t *) pack);
+        } else if (_flag == POSITION_ONLY){
+            this->_data.position = *((uint32_t *) pack);
+        }
     }
 
 private:
 	Encoder_internal_state_t _encoder;
+    uint8_t _flag;
 
 public:
 	static Encoder_internal_state_t * interruptArgs[ENCODER_ARGLIST_SIZE];

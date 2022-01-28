@@ -21,7 +21,7 @@ ADC* BaseAnalogSensor::get_adc() {
 	return _adc;
 }
 
-uint32_t BaseAnalogSensor::get_raw() {
+float BaseAnalogSensor::get_raw() {
 	return _raw;
 }
 

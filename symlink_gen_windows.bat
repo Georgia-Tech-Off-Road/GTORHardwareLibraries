@@ -14,10 +14,12 @@
     forfiles /P "%source%" /C "cmd /c if @isdir==TRUE ( mklink /d \"%target%\@file\" @path )"
     forfiles /P "%source%\Sensors" /C "cmd /c if @isdir==TRUE ( mklink /d \"%target%\@file\" @path )"
     forfiles /P "%source%\ExternalLibraries" /C "cmd /c if @isdir==TRUE ( mklink /d \"%target%\@file\" @path )"
+    forfiles /P "%source%\ControlLibraries" /C "cmd /c if @isdir==TRUE ( mklink /d \"%target%\@file\" @path )"
     forfiles /P "%source%\Utility" /C "cmd /c if @isdir==TRUE ( mklink /d \"%target%\@file\" @path )"
 
     cmd /c rmdir %target%\Sensors
     cmd /c rmdir %target%\ExternalLibraries
+    cmd /c rmdir %target%\ControlLibraries
     cmd /c rmdir %target%\Utility
     cmd /c rmdir %target%\.git
 

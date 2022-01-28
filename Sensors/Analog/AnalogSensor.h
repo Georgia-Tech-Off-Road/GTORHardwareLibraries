@@ -27,7 +27,7 @@ public:
 
 	uint8_t get_port();
 	ADC* get_adc();
-	uint32_t get_raw();
+	float get_raw();
 	float get_voltage();
 };
 
