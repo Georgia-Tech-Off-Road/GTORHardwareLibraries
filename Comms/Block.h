@@ -111,10 +111,13 @@ class CommandBlock : public Block<DataType> {
 private:
     DataType _prev_data;
     std::function<void(DataType)> _onchange_callback;
+    bool _has_changed;
 public:
+    CommandBlock();
     void attach_callback(std::function<void(DataType)> onchange_callback);
     void unpack (const uint8_t* pack);
     void update();
+    bool has_changed();
 };
 
 #include "BlockTypes.h"
