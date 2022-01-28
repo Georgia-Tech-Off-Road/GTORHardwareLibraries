@@ -9,12 +9,12 @@ Generated at: 2022-01-27 21:58:37.323395
 
 *******************************************************************************************/
 
-#ifndef SENSORID_H
-#define SENSORID_H
+#ifndef BLOCKID_H
+#define BLOCKID_H
 
 #include <Arduino.h>
 
-enum sensor_id_t : uint16_t
+enum block_id_t : uint16_t
 {
 
     /**

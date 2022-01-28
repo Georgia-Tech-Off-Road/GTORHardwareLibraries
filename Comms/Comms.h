@@ -1,3 +1,18 @@
+/**
+ * File: Comms.h
+ * Author: Akash Harapanahalli
+ * 
+ * Comms is the implementation of DAQCP.
+ * For more information about DAQCP, check the DAQCP documentation.
+ * 
+ * Comms does the following:
+ *  - Manage dynamic additions and removal of blocks (input or output)
+ *  - "packetize" all blocks into settings and data packets
+ *  - "send_packet" to the other side (done in derived classes)
+ *  - "unpacketize" settings and data packets and set received blocks
+ *  - "read_packet" from the other side (done in derived classes)
+ */
+
 #ifndef COMMS_H
 #define COMMS_H
 
@@ -9,8 +24,17 @@ struct end_code_t {
     const uint8_t& operator[] (uint8_t i) const;
 };
 
+/**
+ * Comms
+ * 
+ * 
+ */
+
 class Comms {
 protected:
+    /**
+     * Flags 
+     */
     bool _is_sending_data;
     bool _is_receiving_data;
     std::vector<uint8_t> _packet_receive;
@@ -27,6 +51,8 @@ protected:
     virtual void send_packet() = 0;
     virtual void packetize();
     virtual void unpacketize();
+
+    uint16_t _unpacketize_attempts;
 
 public:
     Comms();

@@ -14,7 +14,8 @@ const uint8_t& end_code_t::operator[] (uint8_t i) const {
  */
 Comms::Comms() : 
     _is_sending_data(0),
-    _is_receiving_data(0) { }
+    _is_receiving_data(0),
+    _unpacketize_attempts(0) { }
 
 
 /**
@@ -31,6 +32,11 @@ void Comms::update_output_blocks(){
     }
 }
 
+/**
+ * void Comms::unpacketize()
+ * 
+ * This function takes a received packet in _packet_receive and decodes information.
+ */
 void Comms::unpacketize() {
     // check ack byte --> [000000] & is_sending_data & is_receiving_data
     // ^ this is with respect to the sender.
@@ -38,40 +44,39 @@ void Comms::unpacketize() {
     // if 0x02, then parse data     but send settings.
     // if 0x01, then parse settings and send data.
     // if 0x00, then parse settings and send settings.
-    static uint16_t attempts = 0; 
 
+    // ACK is the first byte of the received packet.
     const uint8_t ack = _packet_receive[0];
-    if(ack > 0x03) return; // ACK IS NOT STANDARD! CHANGE TO DO SOMETHING ELSE
+
+    // ACK IS NOT STANDARD! CHANGE TO DO SOMETHING ELSE??
+    if(ack > 0x03) return; 
 
     const bool sender_is_sending_data   = ack & 0x02; 
     const bool sender_is_receiving_data = ack & 0x01;
 
+    // Send data itself only when "sender" is receiving data correctly.
     _is_sending_data = sender_is_receiving_data;
 
-    if(sender_is_sending_data) { // RECEIVING DATA
+    // RECEIVING DATA
+    if(sender_is_sending_data) { 
         if(get_expected_receive_bytes() == _packet_receive.size()) { // packet lengths good
-            // Serial.print("\nreceived data of length: ");
-            // Serial.println(_packet_receive.size());
-            const uint8_t *packet_loc = _packet_receive.data() + 1; // pointer to constant data, +1 to skip ack
+            // Skip ACK byte.
+            const uint8_t *packet_loc = _packet_receive.data() + 1;
             for(auto it = _received_blocks.begin(); it != _received_blocks.end(); it++){
-                // Serial.println("block");
+                // Unpack each received block, and move pointer to the next block.
                 (*it)->unpack(packet_loc);
-                    // Serial.println(*((uint32_t*)packet_loc));
-                // Serial.print("location inside uartcomms: ");
-                // Serial.println((uint32_t)(*it)->get_id());
                 packet_loc += (*it)->get_packlen();
             }
-        } else { // packet lengths not good
-            // CHANGE LOGIC TO DO THIS AFTER X AMOUNTS OF MISSES.
-            if(++attempts > 10){
+        } else { // packet length not good
+            // Wait for 10 packet length misses before requesting new settings.
+            if(++_unpacketize_attempts > 10){
                 _is_receiving_data = 0;
-                attempts = 0;
+                _unpacketize_attempts = 0;
             }
         }
-    } else { // RECEIVING SETTINGS
-        // Serial.print("\nreceived settings of length: ");
-        // Serial.println(_packet_receive.size());
-
+    } 
+    // RECEIVING SETTINGS 
+    else { 
         for(auto rs = _received_blocks.begin(); rs != _received_blocks.end(); rs++){
             bool match = 0;
             for(auto is = _input_blocks.begin(); (is != _input_blocks.end() && !match); is++){
@@ -81,16 +86,18 @@ void Comms::unpacketize() {
         }
 
         _received_blocks.clear();
-        const uint8_t *packet_loc = _packet_receive.data() + 1; // pointer to constant data, +1 to skip ack
-        // const uint8_t * const packet_end = _packet_receive.data() - 8;
+
+        // Skip ACK byte.
+        const uint8_t *packet_loc = _packet_receive.data() + 1; 
+        // Skip end code.
         const uint8_t * const packet_end = _packet_receive.data() + _packet_receive.size() - 9;
-        // Serial.println((uint32_t)packet_loc, HEX);
-        // Serial.println((uint32_t)packet_end, HEX);
+
         while (packet_loc < packet_end) {
-            // uint8_t id = *((uint16_t *) packet_loc);
+            // Piece together ID using first two bytes.
             uint8_t id_lsb = *((uint8_t *) packet_loc);
             uint8_t id_msb = *((uint8_t *) (packet_loc + 1));
             uint16_t id = ((uint16_t) id_msb << 8) | (uint16_t) id_lsb;
+            // Pack bytes for block using last byte.
             uint8_t pack_bytes = *((uint8_t *) (packet_loc + 2));
 
             // Check if Block is in list of input blocks.

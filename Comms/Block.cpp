@@ -1,3 +1,10 @@
+/**
+ * File: Block.cpp
+ * Author: Akash Harapanahalli
+ * 
+ * See Block.h for prototype and specific details.
+ */
+
 #include "Block.h"
 
 /**
