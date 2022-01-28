@@ -9,7 +9,6 @@ ClockTimerf serialTimer(100);
 void setup() {
   // put your setup code here, to run once:
   tadc.attach_sensor(temp, TEENSY_PORT);
-  int temp_data;
   Serial.begin(115200);
   delay(100);
   
