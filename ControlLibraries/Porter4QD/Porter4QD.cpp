@@ -14,13 +14,13 @@ void Porter4QD::begin(){
     pinMode(_throttle_pin, OUTPUT);
     pinMode(_enable_pin, OUTPUT);
     _enabled = false;
-    digitalWrite(_enable_pin, HIGH);
+    digitalWrite(_enable_pin, LOW);
 }
 
 void Porter4QD::setSpeed(uint8_t speed){
     if (!_enabled) {
         _enabled = true;
-        digitalWrite(_enable_pin, LOW);
+        digitalWrite(_enable_pin, HIGH);
     }
     uint8_t scaled_speed = max(min((speed * _scale + _offset), 255), 0);
     analogWrite(_throttle_pin, scaled_speed);
@@ -28,8 +28,8 @@ void Porter4QD::setSpeed(uint8_t speed){
 
 void Porter4QD::kill(){
     _enabled = false;
-    digitalWrite(_enable_pin, HIGH);
-    //analogWrite(_throttle_pin, 0);
+    digitalWrite(_enable_pin, LOW);
+    analogWrite(_throttle_pin, 0);
 }
 
 #endif
