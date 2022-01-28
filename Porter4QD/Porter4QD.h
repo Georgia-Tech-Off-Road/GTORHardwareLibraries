@@ -2,7 +2,6 @@
 #define PORTER4QD_H
 
 #include <Arduino.h>
-#include <Sensor.h>
 
 class Porter4QD {
 private:
