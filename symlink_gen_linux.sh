@@ -9,7 +9,7 @@ cd ExternalLibraries
 find . -maxdepth 1 -mindepth 1 -type d \
 		-exec ln -sfn $PWD/'{}' ~/Arduino/libraries/'{}' \;
 
-cd ControlLibraries
+cd ../ControlLibraries
 find . -maxdepth 1 -mindepth 1 -type d \
 		-exec ln -sfn $PWD/'{}' ~/Arduino/libraries/'{}' \;
 		

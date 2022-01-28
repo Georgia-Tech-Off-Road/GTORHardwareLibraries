@@ -2,7 +2,6 @@
 #define ANALOGSENSOR_H
 
 #include "Arduino.h"
-#include <type_traits>
 #include "ADC.h"
 #include "Block.h"
 

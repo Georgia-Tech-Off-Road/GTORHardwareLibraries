@@ -24,6 +24,7 @@
 
 #include <Arduino.h>
 #include <vector>
+#include <functional>
 #include "BlockId.h"
 
 /**
@@ -103,6 +104,17 @@ public:
     DynamicBlock (block_id_t id, uint8_t packlen);
     void pack   (uint8_t* pack);
     void unpack (const uint8_t* pack);
+};
+
+template <typename DataType>
+class CommandBlock : public Block<DataType> {
+private:
+    DataType _prev_data;
+    std::function<void(DataType)> _onchange_callback;
+public:
+    void attach_callback(std::function<void(DataType)> onchange_callback);
+    void unpack (const uint8_t* pack);
+    void update();
 };
 
 #include "BlockTypes.h"

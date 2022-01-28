@@ -31,7 +31,7 @@ template class Block<float>;
 template class Block<double>;
 template class Block<bool>;
 
-template class Block<std::vector<uint8_t>>
+template class Block<std::vector<uint8_t>>;
 
 /**
  * User Defined Types
