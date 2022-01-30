@@ -9,3 +9,11 @@ void LoadCell::tare(){
     adc.update_sensor(*this);
     _offset -= this->get_data();
 }
+
+void LoadCell::set_scale(float scale) {
+    _scale = scale;
+}
+
+float LoadCell::get_scale() {
+    return _scale;
+}
