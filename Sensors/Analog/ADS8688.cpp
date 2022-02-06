@@ -21,23 +21,6 @@ void ADS8688::attach_sensor(BaseAnalogSensor& sensor, uint8_t port){
     _sensors.push_back(&sensor);
 }
 
-void ADS8688::update_sensors() {
-	for(auto it = _sensors.begin(); it != _sensors.end(); ++it){
-		float a = update_sensor((*it)->get_port());
-		(*it)->set_raw(a / get_max());
-	}
-}
-
-
-void ADS8688::update_sensor(uint8_t port) {
-    for (auto it = _sensors.begin(); it != _sensors.end(); it++){
-        if((*it)->get_port() == port) {
-            update_sensor(*(*it));
-            return;
-        }
-    }
-}
-
 uint32_t ADS8688::get_max() {
     return 65535;
 }
@@ -122,7 +105,7 @@ void ADS8688::set_port_vrange(uint8_t port, uint8_t vrange) {
 void ADS8688::update_sensor_vrange(){
     // goes through each sensor and updates their vrange
     for (auto it = _sensors.begin(); it != _sensors.end(); it++){
-        it.set_vrange(_vmin[(*it)->get_port()], _vmax[(*it)->get_port()]);
+        (*it)->set_vrange(_vmin[(*it)->get_port()], _vmax[(*it)->get_port()]);
     }
 }
 
@@ -176,4 +159,5 @@ void ADS8688::update_sensor(BaseAnalogSensor& sensor) {
         break;
     }
     sensor.set_raw(sensor_voltage / get_max());
+    sensor.update_data();
 }
