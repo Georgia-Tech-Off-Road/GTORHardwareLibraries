@@ -1,7 +1,10 @@
 #ifndef ADS8688_H
 #define ADS8688_H
 
+#include "Arduino.h"
 #include "ADC.h"
+
+#include <SPI.h>
 
 class ADS8688 : public ADC {
 private:
@@ -27,15 +30,31 @@ private:
 // Program Register
 // RESISTER_SELECT B[15:9] | R/W | REGISTER_DATA B[7:0]
 	typedef enum {
-		CH0 = 0x0B,
+		AUTO_SEQ_EN_R = 0x02, //Used to enable channels to be read from automatically
+		AUTO_SEQ_EN_W = 0x03,
+		CHANNEL_POWER_DOWN_R = 0x04, //Used to power down chosen channels
+		CHANNEL_POWER_DOWN_W = 0x05,
+		FEATURE_SELECT_R = 0x06, //Used for Daisy Chain
+		FEATURE_SELECT_W = 0x07,
+		//The below things can change the input voltage range
+		//REGISTER_DATA B[7:4] = 0
+		//REGISTER_DATA B[3:0] = 
+		// 0000 for input range = +-2.5*VREF
+		// 0001 for input range = +-2.5*VREF
+		// 0010 for input range = +-2.5*VREF
+		// 0101 for input range = +-2.5*VREF
+		// 0110 for input range = +-2.5*VREF
+		CH0 = 0x0B, 
 		CH1 = 0x0D,
 		CH2 = 0x0F,
 		CH3 = 0x11,
 		CH4 = 0x13,
 		CH5 = 0x15,
 		CH6 = 0x17,
-		CH8 = 0x19
+		CH7 = 0x19,
+		COMMAND_READ_BACK = 0x7E //Reads back the command word (MSB) executed in previous data frame
 	} program_reg_t;
+
 
 // Range Select Channel
 // 0000 - +-10.24V
@@ -49,9 +68,12 @@ private:
 		SIGNED_2V56 =    0b00000010,
 		UNSIGNED_10V24 = 0b00000101,
 		UNSIGNED_5V12 =  0b00000110
-	}
+	} voltage_reg_t;
 
 	uint8_t _CSPin;
+	float _vmin[8] = {0,0,0,0,0,0,0,0};
+	float _vmax[8] = {5.12,5.12,5.12,5.12,5.12,5.12,5.12,5.12};
+
 
 public:
 	ADS8688(uint8_t CSPin);
@@ -59,8 +81,10 @@ public:
 	void update_sensors();
 	void update_sensor(BaseAnalogSensor& sensor);
 	void update_sensor(uint8_t port);
+	void set_port_vrange(uint8_t port, uint8_t vrange);
+	void update_sensor_vrange();
+	uint16_t get_sample(command_reg_t port);
 	uint32_t get_max();
-	uint16_t get_channel_voltage(uint8_t channel);
 };
 
 #endif
