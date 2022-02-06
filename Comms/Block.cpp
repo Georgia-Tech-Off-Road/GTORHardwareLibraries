@@ -1,3 +1,10 @@
+/**
+ * File: Block.cpp
+ * Author: Akash Harapanahalli
+ * 
+ * See Block.h for prototype and specific details.
+ */
+
 #include "Block.h"
 
 /**
@@ -28,7 +35,7 @@ void BaseBlock::set_packlen(uint8_t packlen){
  */
 
 template <class DataType>
-Block<DataType>::Block() : BaseBlock(0, sizeof(DataType)) { }
+Block<DataType>::Block() : BaseBlock((block_id_t) 0, sizeof(DataType)) { }
 
 
 template <class DataType>
@@ -71,3 +78,39 @@ void DynamicBlock::unpack (const uint8_t* pack){
     memcpy(_data.data(), pack, _packlen);
 }
 
+
+/**
+ * CommandBlock Definitions
+ */
+
+template <class DataType>
+CommandBlock<DataType>::CommandBlock() : _has_changed(0) { };
+
+template <class DataType>
+void CommandBlock<DataType>::attach_callback(std::function<void(DataType)> onchange_callback) {
+    _onchange_callback = onchange_callback;
+}
+
+template <class DataType>
+void CommandBlock<DataType>::unpack (const uint8_t* pack){
+    memcpy((uint8_t*) &this->_data, pack, this->_packlen);
+}
+
+template <class DataType>
+void CommandBlock<DataType>::update() {
+    if(_prev_data != this->_data) {
+        _has_changed = 1;
+        if(_onchange_callback) _onchange_callback(this->_data);
+    }
+    _prev_data = this->_data;
+}
+
+template <class DataType>
+bool CommandBlock<DataType>::has_changed () {
+    if(_has_changed) {
+        _has_changed = 0;
+        return 1;
+    } else {
+        return 0;
+    }
+}

@@ -12,7 +12,7 @@ private:
     const uint32_t _sending_period_us;
     const uint32_t _settings_period_us;
     uint32_t _time_at_last_send;
-    uint32_t _time_at_last_receive;
+    uint32_t _time_at_last_read;
 
     void read_packet();
     void send_packet();
@@ -21,7 +21,7 @@ private:
     
 public:
     SerialComms(usb_serial_class &port);
-    void begin(uint32_t baud);
+    void begin(uint32_t baud=230400);
     usb_serial_class *get_port();
 
     void update_monitor();

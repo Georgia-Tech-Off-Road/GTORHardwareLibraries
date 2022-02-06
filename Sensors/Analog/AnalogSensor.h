@@ -2,7 +2,6 @@
 #define ANALOGSENSOR_H
 
 #include "Arduino.h"
-#include <type_traits>
 #include "ADC.h"
 #include "Block.h"
 
@@ -20,22 +19,27 @@ public:
 	void set_port(uint8_t port);
 	void set_vrange(float vmin, float vmax);
 	void set_adc(ADC* adc);
+	void set_raw(float raw);	
 	
-	// Need to implement for individual sensors.
-	// raw is normalized from 0.0-1.0, need to set_data here.
-	virtual void set_raw(float raw) = 0;
-
 	uint8_t get_port();
 	ADC* get_adc();
-	float get_raw();
+	float get_raw();	
 	float get_voltage();
+
+	friend class ADC;
+
+	// Need to implement for individual sensors, it will use either this->get_voltage() or
+	// this->get_raw() to get the current voltage or normalized "voltage" (a number from 
+	// 0 to 1) to do this->set_data() with the current data in whatever units makes sense
+	// for that given sensor.
+	virtual void update_data() = 0;
 };
 
 template <typename DataType>
 class AnalogSensor : public BaseAnalogSensor, public Block<DataType> {
 public:
 	void update();
-	virtual void set_raw(float raw) = 0;
+	virtual void update_data() = 0;
 };
 
 #include "AnalogSensorTypes.h"

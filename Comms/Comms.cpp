@@ -1,4 +1,15 @@
+/**
+ * File: Comms.cpp
+ * Author: Akash Harapanahalli
+ * 
+ * See Comms.h for prototype and specific details.
+ */
+
 #include "Comms.h"
+
+/**
+ * end_code_t implementation
+ */
 
 end_code_t::end_code_t() {
     for(uint8_t i = 0; i < 7; ++i) code[i] = 0xFF;
@@ -9,16 +20,25 @@ const uint8_t& end_code_t::operator[] (uint8_t i) const {
     return code[i];
 }
 
+
+/**
+ * Comms implementation
+ */
+
 /*
  * Constructor
  */
 Comms::Comms() : 
     _is_sending_data(0),
-    _is_receiving_data(0) { }
+    _is_reading_data(0),
+    _unpacketize_attempts(0) { }
 
 
 /**
- * Updates the Comms class. Need to define read_packet and send_packet in derived class.
+ * Comms::update()
+ * 
+ * Updates the Comms class. 
+ * Need to define read_packet and send_packet in derived class.
  */
 void Comms::update(){
     read_packet();
@@ -26,52 +46,57 @@ void Comms::update(){
 }
 
 void Comms::update_output_blocks(){
-    for(auto it = _transmit_blocks.begin(); it != _transmit_blocks.end(); it++){
+    for(auto it = _output_blocks.begin(); it != _output_blocks.end(); it++){
         (*it)->update();
     }
 }
 
+/**
+ * Comms::unpacketize()
+ * 
+ * This function takes a received packet in _packet_read and decodes information.
+ */
+
 void Comms::unpacketize() {
-    // check ack byte --> [000000] & is_sending_data & is_receiving_data
+    // check ack byte --> [000000] & is_sending_data & is_reading_data
     // ^ this is with respect to the sender.
     // if 0x03, then parse data     and send data.
     // if 0x02, then parse data     but send settings.
     // if 0x01, then parse settings and send data.
     // if 0x00, then parse settings and send settings.
-    static uint16_t attempts = 0; 
 
-    const uint8_t ack = _packet_receive[0];
-    if(ack > 0x03) return; // ACK IS NOT STANDARD! CHANGE TO DO SOMETHING ELSE
+    // ACK is the first byte of the received packet.
+    const uint8_t ack = _packet_read[0];
 
-    const bool sender_is_sending_data   = ack & 0x02; 
-    const bool sender_is_receiving_data = ack & 0x01;
+    // ACK IS NOT STANDARD! CHANGE TO DO SOMETHING ELSE??
+    if(ack > 0x03) return; 
 
-    _is_sending_data = sender_is_receiving_data;
+    const bool sender_is_sending_data = ack & 0x02; 
+    const bool sender_is_reading_data = ack & 0x01;
 
-    if(sender_is_sending_data) { // RECEIVING DATA
-        if(get_expected_receive_bytes() == _packet_receive.size()) { // packet lengths good
-            // Serial.print("\nreceived data of length: ");
-            // Serial.println(_packet_receive.size());
-            const uint8_t *packet_loc = _packet_receive.data() + 1; // pointer to constant data, +1 to skip ack
+    // Send data itself only when "sender" is receiving data correctly.
+    _is_sending_data = sender_is_reading_data;
+
+    // RECEIVING DATA
+    if(sender_is_sending_data) { 
+        if(get_expected_receive_bytes() == _packet_read.size()) { // packet lengths good
+            // Skip ACK byte.
+            const uint8_t *packet_loc = _packet_read.data() + 1;
             for(auto it = _received_blocks.begin(); it != _received_blocks.end(); it++){
-                // Serial.println("block");
+                // Unpack each received block, and move pointer to the next block.
                 (*it)->unpack(packet_loc);
-                    // Serial.println(*((uint32_t*)packet_loc));
-                // Serial.print("location inside uartcomms: ");
-                // Serial.println((uint32_t)(*it)->get_id());
                 packet_loc += (*it)->get_packlen();
             }
-        } else { // packet lengths not good
-            // CHANGE LOGIC TO DO THIS AFTER X AMOUNTS OF MISSES.
-            if(++attempts > 10){
-                _is_receiving_data = 0;
-                attempts = 0;
+        } else { // packet length not good
+            // Wait for 10 packet length misses before requesting new settings.
+            if(++_unpacketize_attempts > 10){
+                _is_reading_data = 0;
+                _unpacketize_attempts = 0;
             }
         }
-    } else { // RECEIVING SETTINGS
-        // Serial.print("\nreceived settings of length: ");
-        // Serial.println(_packet_receive.size());
-
+    } 
+    // RECEIVING SETTINGS 
+    else { 
         for(auto rs = _received_blocks.begin(); rs != _received_blocks.end(); rs++){
             bool match = 0;
             for(auto is = _input_blocks.begin(); (is != _input_blocks.end() && !match); is++){
@@ -81,16 +106,18 @@ void Comms::unpacketize() {
         }
 
         _received_blocks.clear();
-        const uint8_t *packet_loc = _packet_receive.data() + 1; // pointer to constant data, +1 to skip ack
-        // const uint8_t * const packet_end = _packet_receive.data() - 8;
-        const uint8_t * const packet_end = _packet_receive.data() + _packet_receive.size() - 9;
-        // Serial.println((uint32_t)packet_loc, HEX);
-        // Serial.println((uint32_t)packet_end, HEX);
+
+        // Skip ACK byte.
+        const uint8_t *packet_loc = _packet_read.data() + 1; 
+        // Skip end code.
+        const uint8_t * const packet_end = _packet_read.data() + _packet_read.size() - 9;
+
         while (packet_loc < packet_end) {
-            // uint8_t id = *((uint16_t *) packet_loc);
+            // Piece together ID using first two bytes.
             uint8_t id_lsb = *((uint8_t *) packet_loc);
             uint8_t id_msb = *((uint8_t *) (packet_loc + 1));
             uint16_t id = ((uint16_t) id_msb << 8) | (uint16_t) id_lsb;
+            // Pack bytes for block using last byte.
             uint8_t pack_bytes = *((uint8_t *) (packet_loc + 2));
 
             // Check if Block is in list of input blocks.
@@ -98,16 +125,12 @@ void Comms::unpacketize() {
             for (auto it = _input_blocks.begin(); it != _input_blocks.end(); it++){
                 if((*it)->get_id() == id) existing_input_block = *it;
             }
-            //Serial.print(existing_input_block != 0);
             if(existing_input_block != 0) _received_blocks.push_back(existing_input_block);
             else _received_blocks.push_back(new DynamicBlock((block_id_t) id, pack_bytes));
 
             packet_loc += 3;
         }
-        //Serial.print("created ");
-        //Serial.print(_received_blocks.size());
-        //Serial.println(" _received_blocks");
-        _is_receiving_data = 1;
+        _is_reading_data = 1;
     }
 
 
@@ -121,12 +144,18 @@ void Comms::unpacketize() {
     // populate data into blocks using unpack(byte*)
 }
 
+/**
+ * Comms::packetize()
+ * 
+ * This function encodes information into a packet in _packet_send .
+ */
+
 void Comms::packetize() {
-    uint8_t ack = (0x02 & (_is_sending_data << 1)) | (0x01 & (_is_receiving_data));
+    uint8_t ack = (0x02 & (_is_sending_data << 1)) | (0x01 & (_is_reading_data));
     _packet_send.push_back(ack);
     if(_is_sending_data){
         // ack should be 0x03 or 0x02
-        for(auto it = _transmit_blocks.begin(); it != _transmit_blocks.end(); it++){
+        for(auto it = _output_blocks.begin(); it != _output_blocks.end(); it++){
             uint8_t *pack = new byte[(*it)->get_packlen()];
             (*it)->pack(pack);
             for(int i = 0; i < (*it)->get_packlen(); ++i) _packet_send.push_back(pack[i]);
@@ -149,7 +178,7 @@ void Comms::packetize() {
         }
     } else {
         // ack should be 0x01 or 0x00
-        for(auto it = _transmit_blocks.begin(); it != _transmit_blocks.end(); it++){
+        for(auto it = _output_blocks.begin(); it != _output_blocks.end(); it++){
             uint16_t id = (*it)->get_id();
             uint8_t id_byte_1 = *((uint8_t *)(&id));
             uint8_t id_byte_2 = *((uint8_t *)(&id) + 1);
@@ -196,7 +225,7 @@ uint8_t Comms::get_expected_receive_bytes() {
 
 uint8_t Comms::get_expected_transmit_bytes() {
     uint8_t bytes = 0;
-    for(auto it = _transmit_blocks.begin(); it != _transmit_blocks.end(); it++) bytes += (*it)->get_packlen();
+    for(auto it = _output_blocks.begin(); it != _output_blocks.end(); it++) bytes += (*it)->get_packlen();
     for(auto tp = _throughput_comms.begin(); tp != _throughput_comms.end(); tp++){
         for(auto it = (*tp)->_received_blocks.begin(); it != (*tp)->_received_blocks.end(); it++){
             bool detached = 0;
@@ -249,13 +278,13 @@ void Comms::attach_output_block(BaseBlock &block, block_id_t id){
             _detached_blocks.erase(ds);
     }
     // Check to see if it is already attached. If so, do nothing
-    for (auto it = _transmit_blocks.begin(); it != _transmit_blocks.end(); it++){
+    for (auto it = _output_blocks.begin(); it != _output_blocks.end(); it++){
         if((*it)->get_id() == id)
             return;
     }
     // Attach the block
     block.set_id(id);
-    _transmit_blocks.push_back(&block);
+    _output_blocks.push_back(&block);
 }
 
 /*
@@ -283,9 +312,9 @@ void Comms::attach_throughput_comms(Comms &throughput_comms){
  */
 void Comms::detach_output_block(block_id_t id){
     // Check to see if it is already attached. If so, remove it
-    for (auto it = _transmit_blocks.begin(); it != _transmit_blocks.end(); it++){
+    for (auto it = _output_blocks.begin(); it != _output_blocks.end(); it++){
         if((*it)->get_id() == id)
-            _transmit_blocks.erase(it);
+            _output_blocks.erase(it);
     }
     // Check to see if it is already detached. If so, do nothing
     for (auto it = _detached_blocks.begin(); it != _detached_blocks.end(); it++){

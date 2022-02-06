@@ -1,14 +1,40 @@
+/**
+ * File: Block.h
+ * Author: Akash Harapanahalli
+ * 
+ * Blocks are the base unit of all communications under DAQCP.
+ * For more information about DAQCP, check the DAQCP documentation.
+ * 
+ * At their core, Blocks are very simple and do the following:
+ *  - store data of any type (primitive or user-defined)
+ *  - "pack" its data into a byte array to send over Comms
+ *  - "unpack" byte arrays from Comms to set its data (not an active Block)
+ *  - "update" its data through some user-defined sequence (active Block)
+ * 
+ * Active Blocks are being actively set by the host microcontroller.
+ * Passive Blocks are not, instead having their values received over Comms.
+ * 
+ * All instances of Block have their own unique ID. See BlockId.h
+ * 
+ * See Block.cpp for implementation details.
+ */
+
 #ifndef BLOCK_H
 #define BLOCK_H
 
 #include <Arduino.h>
 #include <vector>
-
-typedef uint16_t block_id_t;
+#include <functional>
+#include "BlockId.h"
 
 /**
- * BaseBlock is the unit of all communications.
- * DO NOT extend this class directly! Use Sensor or Generic...
+ * BaseBlock
+ * 
+ * BaseBlock is an Abstract Class that implements all of Block except for the data.
+ * They are separated because templated classes cannot have polymorphic references.
+ * Instead, we have polymorphic references to BaseBlock.
+ * 
+ * DO NOT extend BaseBlock class directly! Use Block or some extension of Block.
  * All communications over the protocol will use this base type.
  * All blocks are assumed to have write and read capabilities.
  */
@@ -47,6 +73,13 @@ public:
     virtual void update () = 0;
 };
 
+
+/**
+ * Block
+ * 
+ * Extend Block when you need to communicate over DAQCP.
+ */
+
 template <typename DataType>
 class Block : public BaseBlock {
 protected:
@@ -71,6 +104,20 @@ public:
     DynamicBlock (block_id_t id, uint8_t packlen);
     void pack   (uint8_t* pack);
     void unpack (const uint8_t* pack);
+};
+
+template <typename DataType>
+class CommandBlock : public Block<DataType> {
+private:
+    DataType _prev_data;
+    std::function<void(DataType)> _onchange_callback;
+    bool _has_changed;
+public:
+    CommandBlock();
+    void attach_callback(std::function<void(DataType)> onchange_callback);
+    void unpack (const uint8_t* pack);
+    void update();
+    bool has_changed();
 };
 
 #include "BlockTypes.h"

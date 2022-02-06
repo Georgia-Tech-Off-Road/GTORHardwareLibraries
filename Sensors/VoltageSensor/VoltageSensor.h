@@ -1,6 +1,3 @@
-#ifndef VOLTAGESENSOR_H
-#define VOLTAGESENSOR_H
-
 /**
  * VoltageSensor.h
  * A library to work with Voltage sensors
@@ -23,12 +20,15 @@
  *      - This will update the sensor to be used by the communication utility
  */
 
+#ifndef VOLTAGESENSOR_H
+#define VOLTAGESENSOR_H
+
 #include "AnalogSensor.h"
 
 template <typename DataType>
 class VoltageSensor : public AnalogSensor<DataType> {
 public:
-    void set_raw(float raw);
+    void update_data();
 };
 
 template class VoltageSensor<uint8_t>;

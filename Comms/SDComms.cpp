@@ -65,7 +65,7 @@ void SDComms::packetize() {
     _packet_send.push_back(ack);
     if(_is_sending_data){
         // ack or 0x02
-        for(auto it = _transmit_blocks.begin(); it != _transmit_blocks.end(); it++){
+        for(auto it = _output_blocks.begin(); it != _output_blocks.end(); it++){
             uint8_t *pack = new byte[(*it)->get_packlen()];
             (*it)->pack(pack);
             for(int i = 0; i < (*it)->get_packlen(); ++i) _packet_send.push_back(pack[i]);
@@ -88,7 +88,7 @@ void SDComms::packetize() {
         }
     } else {
         // ack should be 0x01 or 0x00
-        for(auto it = _transmit_blocks.begin(); it != _transmit_blocks.end(); it++){
+        for(auto it = _output_blocks.begin(); it != _output_blocks.end(); it++){
             uint16_t id = (*it)->get_id();
             uint8_t id_byte_1 = *((uint8_t *)(&id));
             uint8_t id_byte_2 = *((uint8_t *)(&id) + 1);
