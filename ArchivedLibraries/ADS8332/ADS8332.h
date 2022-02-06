@@ -18,7 +18,7 @@ class ADS8332 : public ADC
 		uint32_t get_max();
 		void begin();
 		void reset();
-	private:
+	private:	
 		enum class CommandRegister : uint8_t {
 			SelectCh0 = 0,
 			SelectCh1 = 1,
