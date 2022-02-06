@@ -1,7 +1,6 @@
-#include "LEDConrol.h"
-#include <Arduino.h>
+#include "LEDControl.h"
 
-LEDControl::LEDControl(uint8_t pin, float freq) : _pin(pin), _freq(freq), _state(0) {
+LEDControl::LEDControl(uint8_t pin, float freq) : _state(0), _pin(pin), _freq(freq) {
     _period = (1/freq) / 2;
     _last_updated = micros();
 }
