@@ -14,11 +14,6 @@ protected:
 	float _vmin;
 	float _vmax;
 	ADC* _adc;
-	// Need to implement for individual sensors, it will use either this->get_voltage() or
-	// this->get_raw() to get the current voltage or normalized "voltage" (a number from 
-	// 0 to 1) to do this->set_data() with the current data in whatever units makes sense
-	// for that given sensor.
-	virtual void update_data() = 0;
 
 public:
 	void set_port(uint8_t port);
@@ -32,15 +27,19 @@ public:
 	float get_voltage();
 
 	friend class ADC;
+
+	// Need to implement for individual sensors, it will use either this->get_voltage() or
+	// this->get_raw() to get the current voltage or normalized "voltage" (a number from 
+	// 0 to 1) to do this->set_data() with the current data in whatever units makes sense
+	// for that given sensor.
+	virtual void update_data() = 0;
 };
 
 template <typename DataType>
 class AnalogSensor : public BaseAnalogSensor, public Block<DataType> {
-protected:
-	virtual void update_data() = 0;
-
 public:
 	void update();
+	virtual void update_data() = 0;
 };
 
 #include "AnalogSensorTypes.h"
