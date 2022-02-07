@@ -161,3 +161,18 @@ void ADS8688::update_sensor(BaseAnalogSensor& sensor) {
     sensor.set_raw(sensor_voltage / get_max());
     sensor.update_data();
 }
+
+void ADS8688::update_sensors() {
+	for(auto it = _sensors.begin(); it != _sensors.end(); ++it){
+		this->update_sensor(*(*it));
+	}
+}
+
+void ADS8688::update_sensor(uint8_t port) {
+    for (auto it = _sensors.begin(); it != _sensors.end(); it++){
+        if((*it)->get_port() == port) {
+            update_sensor(*(*it));
+            return;
+        }
+    }
+}
