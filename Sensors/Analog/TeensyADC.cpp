@@ -14,8 +14,7 @@ void TeensyADC::attach_sensor(BaseAnalogSensor& sensor, uint8_t port){
 
 void TeensyADC::update_sensors() {
 	for(auto it = _sensors.begin(); it != _sensors.end(); ++it){
-		float a = analogRead((*it)->get_port());
-		(*it)->set_raw(a / get_max());
+		this->update_sensor(*(*it));
 	}
 }
 
