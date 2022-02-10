@@ -18,7 +18,7 @@ private:
     
 public:
     UARTComms(HardwareSerial &port);
-    void begin(uint32_t baud=230400);
+    void begin(uint32_t baud = 230400);
     HardwareSerial *get_port();
 };
 

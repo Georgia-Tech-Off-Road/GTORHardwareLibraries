@@ -22,7 +22,6 @@ void TeensyADC::update_sensors() {
 void TeensyADC::update_sensor(BaseAnalogSensor& sensor) {
     float a = analogRead(sensor.get_port());
     sensor.set_raw(a / get_max());
-    sensor.update_data();
 }
 
 void TeensyADC::update_sensor(uint8_t port) {

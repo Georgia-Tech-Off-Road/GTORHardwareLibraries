@@ -21,7 +21,7 @@ private:
     
 public:
     SerialComms(usb_serial_class &port);
-    void begin(uint32_t baud=230400);
+    void begin(uint32_t baud = 230400);
     usb_serial_class *get_port();
 
     void update_monitor();

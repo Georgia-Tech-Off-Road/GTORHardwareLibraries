@@ -36,4 +36,5 @@ float BaseAnalogSensor::get_voltage() {
 template <typename DataType>
 void AnalogSensor<DataType>::update() {
 	_adc->update_sensor(*this);
+	this->update_data();
 }

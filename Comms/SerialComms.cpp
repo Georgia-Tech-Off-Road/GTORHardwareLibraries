@@ -14,7 +14,7 @@ SerialComms::SerialComms(usb_serial_class &port) :
 /*
  * @brief Initializes the hardware for the Serial Port
  */
-void SerialComms::begin(uint32_t baud=230400){
+void SerialComms::begin(uint32_t baud){
     _baud = baud;
     _port->begin(_baud);
 }
