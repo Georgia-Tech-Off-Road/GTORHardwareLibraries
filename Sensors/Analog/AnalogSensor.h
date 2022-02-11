@@ -25,6 +25,8 @@ public:
 	ADC* get_adc();
 	float get_raw();	
 	float get_voltage();
+	float get_vmin();
+	float get_vmax();
 
 	friend class ADC;
 

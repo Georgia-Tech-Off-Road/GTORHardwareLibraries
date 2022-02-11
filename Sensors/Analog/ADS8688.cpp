@@ -92,9 +92,11 @@ void ADS8688::set_port_vrange(uint8_t port, uint8_t vrange) {
             break;
     }
 
+    uint16_t write_message = (reg_port << 9) | (1 << 8) | voltage_range;
+
     SPI.beginTransaction(SPISettings(17000000, MSBFIRST, SPI_MODE0)); // Might be mode 1
     digitalWrite(_CSPin, LOW);
-    SPI.transfer16(reg_port<<8||voltage_range);
+    SPI.transfer16(write_message);
     SPI.transfer(0);// if writing, contains data written, if reading contains data in addressed register
     digitalWrite(_CSPin, HIGH);
     SPI.endTransaction();
@@ -103,7 +105,7 @@ void ADS8688::set_port_vrange(uint8_t port, uint8_t vrange) {
 }
 
 void ADS8688::update_sensor_vrange(){
-    // goes through each sensor and updates their vrange
+    // goes through each sensor and updates their vrange.
     for (auto it = _sensors.begin(); it != _sensors.end(); it++){
         (*it)->set_vrange(_vmin[(*it)->get_port()], _vmax[(*it)->get_port()]);
     }
@@ -111,16 +113,17 @@ void ADS8688::update_sensor_vrange(){
 
 uint16_t ADS8688::get_sample(command_reg_t port){
     uint16_t port_voltage = 0;
+    SPI.beginTransaction(SPISettings(17000000, MSBFIRST, SPI_MODE0)); // Might be mode 1
     digitalWrite(_CSPin, LOW);
     SPI.transfer16(port);
-    SPI.transfer16(0);
+    SPI.transfer16(NO_OP);
     digitalWrite(_CSPin, HIGH);
     SPI.endTransaction();
 
     SPI.beginTransaction(SPISettings(17000000, MSBFIRST, SPI_MODE0)); // Might be mode 1
     digitalWrite(_CSPin, LOW);
     SPI.transfer16(NO_OP);
-    port_voltage = SPI.transfer16(0);
+    port_voltage = SPI.transfer16(NO_OP);
     digitalWrite(_CSPin, HIGH);
     SPI.endTransaction();
     return port_voltage;
@@ -128,7 +131,7 @@ uint16_t ADS8688::get_sample(command_reg_t port){
 
 void ADS8688::update_sensor(BaseAnalogSensor& sensor) {
     uint8_t port = sensor.get_port();
-    uint16_t sensor_voltage = 0;
+    int16_t sensor_voltage = 0;
     switch (port)
     {
     case 0:
@@ -158,7 +161,12 @@ void ADS8688::update_sensor(BaseAnalogSensor& sensor) {
     default:
         break;
     }
-    sensor.set_raw(sensor_voltage / get_max());
+    if (sensor.get_vmin() < 0) {
+        sensor.set_raw( ( ((float)sensor_voltage/(1 << 15)) + 1 ) / 2 );
+    } else {
+        sensor.set_raw( (float)((uint16_t)sensor_voltage) / get_max() );
+    }
+    
     sensor.update_data();
 }
 

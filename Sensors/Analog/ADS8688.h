@@ -55,33 +55,36 @@ private:
 		COMMAND_READ_BACK = 0x7E //Reads back the command word (MSB) executed in previous data frame
 	} program_reg_t;
 
+	uint8_t _CSPin;
+	//Contains the min and max voltage, index of array = channel number
+	//Ex: Channel # minimum voltage = _vmin[#]
+	float _vmin[8] = {0,0,0,0,0,0,0,0};
+	float _vmax[8] = {5.12,5.12,5.12,5.12,5.12,5.12,5.12,5.12};
 
-// Range Select Channel
-// 0000 - +-10.24V
-// 0001 - +-5.12V
-// 0010 - +-2.56V
-// 0101 - 0-10.24V
-// 0110 - 0-5.12V
+
+public:
+	// Range Select Channel
+	// 0000 - +-10.24V
+	// 0001 - +-5.12V
+	// 0010 - +-2.56V
+	// 0101 - 0-10.24V
+	// 0110 - 0-5.12V
 	typedef enum {
 		SIGNED_10V24 =   0b00000000,
 		SIGNED_5V12 =    0b00000001,
 		SIGNED_2V56 =    0b00000010,
 		UNSIGNED_10V24 = 0b00000101,
 		UNSIGNED_5V12 =  0b00000110
-	} voltage_reg_t;
+	} VOLTAGE_RANGE;
 
-	uint8_t _CSPin;
-	float _vmin[8] = {0,0,0,0,0,0,0,0};
-	float _vmax[8] = {5.12,5.12,5.12,5.12,5.12,5.12,5.12,5.12};
+	static uint8_t SIGNED_10V24 0b000;
 
-
-public:
 	ADS8688(uint8_t CSPin);
 	void attach_sensor(BaseAnalogSensor& sensor, uint8_t port);
 	void update_sensors();
 	void update_sensor(BaseAnalogSensor& sensor);
 	void update_sensor(uint8_t port);
-	void set_port_vrange(uint8_t port, uint8_t vrange);
+	void set_port_vrange(uint8_t port, VOLTAGE_RANGE vrange);
 	void update_sensor_vrange();
 	uint16_t get_sample(command_reg_t port);
 	uint32_t get_max();
