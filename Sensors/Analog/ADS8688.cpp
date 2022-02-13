@@ -5,7 +5,7 @@
 ADS8688::ADS8688(uint8_t CSPin){
     _CSPin = CSPin;
     for(uint8_t i = 0; i<8 ; i++){
-        set_port_vrange(i, 1);
+        set_port_vrange(i, UNSIGNED_5V12);
     }
 
 }
@@ -25,37 +25,33 @@ uint32_t ADS8688::get_max() {
     return 65535;
 }
 
-void ADS8688::set_port_vrange(uint8_t port, uint8_t vrange) {
+void ADS8688::set_port_vrange(uint8_t port, VOLTAGE_RANGE vrange) {
     // 5 = +-10.24V
     // 4 = +-5.12V
     // 3 = +-2.56V
     // 2 = 0-10.24V
     // 1 = 0-5.12V
-    voltage_reg_t voltage_range = UNSIGNED_5V12;
-    program_reg_t reg_port;
+    VOLTAGE_RANGE voltage_range = vrange;
+    program_reg_t reg_port = CH0;
+
     switch (vrange) {
-        case 1:
-            voltage_range = UNSIGNED_5V12;
+        case UNSIGNED_5V12:
             _vmin[port] = 0;
             _vmax[port] = 5.12;
             break;
-        case 2:
-            voltage_range = UNSIGNED_10V24;
+        case UNSIGNED_10V24:
             _vmin[port] = 0;
             _vmax[port] = 10.24;
             break;
-        case 3:
-            voltage_range = SIGNED_2V56;
+        case SIGNED_2V56:
             _vmin[port] = -2.56;
             _vmax[port] = 2.56;
             break;
-        case 4:
-            voltage_range = SIGNED_5V12;
+        case SIGNED_5V12:
             _vmin[port] = -5.12;
             _vmax[port] = 5.12;
             break;
-        case 5:
-            voltage_range = SIGNED_10V24;
+        case SIGNED_10V24:
             _vmin[port] = -10.24;
             _vmax[port] = 10.24;
             break;
@@ -161,12 +157,13 @@ void ADS8688::update_sensor(BaseAnalogSensor& sensor) {
     default:
         break;
     }
+    //Accounts for negative voltages
     if (sensor.get_vmin() < 0) {
         sensor.set_raw( ( ((float)sensor_voltage/(1 << 15)) + 1 ) / 2 );
     } else {
         sensor.set_raw( (float)((uint16_t)sensor_voltage) / get_max() );
     }
-    
+
     sensor.update_data();
 }
 

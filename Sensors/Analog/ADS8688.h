@@ -1,3 +1,26 @@
+/**
+ * ADS8688.h
+ * A library to work with ADS8688.
+ * 
+ * ------ Constructor ------
+ * ADS8688 adc(uint8_t CSPin);
+ * 
+ * CSPin -> The chip select pin, maybe set to 10?
+ * 
+ * ------ Usage ------
+ * adc.attach_sensor(sensor, port);
+ *      - This will attach a sensor to a port on the adc
+ * 
+ * adc.set_port_vrange(port, vrange);
+ * 		- This will set the voltage range of a specific port on the adc
+ * 		- vrange must be
+ * 
+ * int temp_data = temp.get_data();
+ *      - This will read the data from the ADC that the LMT87Sensor is attached to and return it
+ * 
+ * temp.update();
+ *      - This will update the sensor to be used by the communication utility
+ */
 #ifndef ADS8688_H
 #define ADS8688_H
 
@@ -77,7 +100,6 @@ public:
 		UNSIGNED_5V12 =  0b00000110
 	} VOLTAGE_RANGE;
 
-	static uint8_t SIGNED_10V24 0b000;
 
 	ADS8688(uint8_t CSPin);
 	void attach_sensor(BaseAnalogSensor& sensor, uint8_t port);
