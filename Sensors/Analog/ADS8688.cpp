@@ -92,7 +92,7 @@ void ADS8688::set_port_vrange(uint8_t port, VOLTAGE_RANGE vrange) {
             break;
     }
 
-    uint16_t write_message = (reg_port << 9) | (1 << 8) | voltage_range;
+    uint16_t write_message = (reg_port << 8) | voltage_range;
 
     SPI.beginTransaction(SPISettings(17000000, MSBFIRST, SPI_MODE0)); // Might be mode 1
     digitalWrite(_CSPin, LOW);
@@ -126,6 +126,7 @@ uint16_t ADS8688::get_sample(command_reg_t port){
     port_voltage = SPI.transfer16(NO_OP);
     digitalWrite(_CSPin, HIGH);
     SPI.endTransaction();
+    Serial.println(port_voltage,HEX);
     return port_voltage;
 }
 
