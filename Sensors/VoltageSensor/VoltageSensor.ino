@@ -9,6 +9,7 @@ ClockTimerf serialTimer(100);
 void setup() {
   // put your setup code here, to run once:
   adc.attach_sensor(volt, TEENSY_PORT);
+  adc.set_port_vrange(0,ADS8688::VOLTAGE_RANGE::SIGNED_5V12);
   Serial.begin(115200);
   delay(100);
   

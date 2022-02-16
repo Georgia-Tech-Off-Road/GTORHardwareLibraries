@@ -13,7 +13,8 @@
  * 
  * adc.set_port_vrange(port, vrange);
  * 		- This will set the voltage range of a specific port on the adc
- * 		- vrange must be
+ * 		- vrange input must be of the form ADS8688::VOLTAGE_RANGE::SIGNED_5V12
+ * 		- port is an integer from 0 - 7
  * 
  * int temp_data = temp.get_data();
  *      - This will read the data from the ADC that the LMT87Sensor is attached to and return it
@@ -102,6 +103,7 @@ public:
 
 
 	ADS8688(uint8_t CSPin);
+	void begin();
 	void attach_sensor(BaseAnalogSensor& sensor, uint8_t port);
 	void update_sensors();
 	void update_sensor(BaseAnalogSensor& sensor);

@@ -4,10 +4,14 @@
 
 ADS8688::ADS8688(uint8_t CSPin){
     _CSPin = CSPin;
+
+}
+
+void ADS8688::begin(){
+    pinMode(_CSPin, OUTPUT);
     for(uint8_t i = 0; i<8 ; i++){
         set_port_vrange(i, UNSIGNED_5V12);
     }
-
 }
 void ADS8688::attach_sensor(BaseAnalogSensor& sensor, uint8_t port){
     // Check to see if something is already attached on the port.
