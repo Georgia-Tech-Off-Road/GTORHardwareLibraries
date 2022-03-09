@@ -24,34 +24,34 @@ void TLC5952::write() {
   // Serial.println("bruh");
   // Serial.println(_data_message, HEX);
   digitalWrite(_lat, LOW);
-  delayMicroseconds(10);
+ // delayMicroseconds(10);
 
   // 25 bits, send MSB first
   for (int8_t b = 24; b >= 0; b--) {
     digitalWrite(_clk, LOW);
-    delayMicroseconds(10);
+   // delayMicroseconds(10);
 
     // If the b-th bit is a 1, make _dat high, else low
     if (_data_message & (1 << b)){
       digitalWrite(_dat, HIGH);
-      delayMicroseconds(10);
+    //  delayMicroseconds(10);
     }
     else {
       digitalWrite(_dat, LOW);
-      delayMicroseconds(10);
+    //  delayMicroseconds(10);
     }
 
     digitalWrite(_clk, HIGH);
-    delayMicroseconds(10);
+   // delayMicroseconds(10);
   }
 
   digitalWrite(_clk, LOW);
-  delayMicroseconds(10);
+ // delayMicroseconds(10);
 
   digitalWrite(_lat, HIGH);
-  delayMicroseconds(10);
+ // delayMicroseconds(10);
   digitalWrite(_lat, LOW);
-  delayMicroseconds(10);
+  //delayMicroseconds(10);
 
 
 }
