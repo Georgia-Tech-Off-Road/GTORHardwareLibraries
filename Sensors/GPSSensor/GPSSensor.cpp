@@ -59,7 +59,7 @@ void GPSSensor::pack   (uint8_t* pack) {
 }
 
 void GPSSensor::unpack (const uint8_t* pack) {
-    uint32_t* pack_ptr = (uint32_t*) pack;
+    const uint32_t* pack_ptr = (const uint32_t*) pack;
     if(_comms_flags & GPS_COMMS_LATITUDE  ) this->_data.latitude   = *(pack_ptr++);
     if(_comms_flags & GPS_COMMS_LONGITUDE ) this->_data.longitude  = *(pack_ptr++);
     if(_comms_flags & GPS_COMMS_DATE      ) this->_data.date       = *(pack_ptr++);
