@@ -4,18 +4,6 @@
 #include "Block.h"
 #include "TinyGPS.h"
 
-struct gps_data_t {
-    int32_t  latitude;
-    int32_t  longitude;
-    uint32_t date;
-    uint32_t time;
-    int32_t  altitude;
-    uint32_t course;
-    uint32_t speed;
-    uint32_t satellites;
-    uint32_t hdop;
-};
-
 #define GPS_COMMS_LATITUDE   0b0000000001
 #define GPS_COMMS_LONGITUDE  0b0000000010
 #define GPS_COMMS_DATE       0b0000000100
