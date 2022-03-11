@@ -2,7 +2,9 @@
 
 GPSSensor::GPSSensor(HardwareSerial& port) : 
     _port(port),
-    _comms_flags(GPS_COMMS_DEFAULT) { }
+    _comms_flags(GPS_COMMS_DEFAULT) { 
+    reset_packlen();
+}
 
 void GPSSensor::begin() {
     _port.begin(9600);
