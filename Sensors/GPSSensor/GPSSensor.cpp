@@ -1,12 +1,12 @@
 #include "GPSSensor.h"
 
-GPSSensor::GPSSensor(HardwareSerial& port) : 
-    _port(port),
+GPSSensor::GPSSensor : 
     _comms_flags(GPS_COMMS_DEFAULT) { 
     reset_packlen();
 }
 
-void GPSSensor::begin() {
+void GPSSensor::begin(HardwareSerial& port) {
+    _port = port;
     _port.begin(9600);
 }
 
