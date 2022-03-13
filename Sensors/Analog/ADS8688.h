@@ -28,7 +28,7 @@
 #include "Arduino.h"
 #include "ADC.h"
 
-#include <SPI.h>
+#include "SPI.h"
 
 class ADS8688 : public ADC {
 private:
