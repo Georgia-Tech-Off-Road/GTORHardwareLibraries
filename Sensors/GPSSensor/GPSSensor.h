@@ -18,8 +18,8 @@
 
 class GPSSensor : public Block<gps_data_t> {
 public:
-    GPSSensor();
-    void begin(HardwareSerial& port);
+    GPSSensor(HardwareSerial& port);
+    void begin();
     void set_comms_flag  (uint16_t comms_addr, bool comms_flag);
     void set_comms_flags (uint16_t comms_flags);
     void update();
