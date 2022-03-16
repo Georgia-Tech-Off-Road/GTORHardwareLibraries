@@ -1,5 +1,3 @@
-#include <Arduino.h>
-#include <SPI.h>
 #include "ADS8688.h"
 
 ADS8688::ADS8688(uint8_t CSPin){
@@ -94,7 +92,7 @@ void ADS8688::set_port_vrange(uint8_t port, VOLTAGE_RANGE vrange) {
 
     uint16_t write_message = (reg_port << 8) | voltage_range;
 
-    SPI.beginTransaction(SPISettings(17000000, MSBFIRST, SPI_MODE0)); // Might be mode 1
+    SPI.beginTransaction(SPISettings(17000000, MSBFIRST, SPI_MODE1)); // Might be mode 1
     digitalWrite(_CSPin, LOW);
     SPI.transfer16(write_message);
     SPI.transfer(0);// if writing, contains data written, if reading contains data in addressed register
@@ -113,14 +111,14 @@ void ADS8688::update_sensor_vrange(){
 
 uint16_t ADS8688::get_sample(command_reg_t port){
     uint16_t port_voltage = 0;
-    SPI.beginTransaction(SPISettings(17000000, MSBFIRST, SPI_MODE0)); // Might be mode 1
+    SPI.beginTransaction(SPISettings(17000000, MSBFIRST, SPI_MODE1)); // Might be mode 1
     digitalWrite(_CSPin, LOW);
     SPI.transfer16(port);
     SPI.transfer16(NO_OP);
     digitalWrite(_CSPin, HIGH);
     SPI.endTransaction();
 
-    SPI.beginTransaction(SPISettings(17000000, MSBFIRST, SPI_MODE0)); // Might be mode 1
+    SPI.beginTransaction(SPISettings(17000000, MSBFIRST, SPI_MODE1)); // Might be mode 1
     digitalWrite(_CSPin, LOW);
     SPI.transfer16(NO_OP);
     port_voltage = SPI.transfer16(NO_OP);
@@ -132,7 +130,7 @@ uint16_t ADS8688::get_sample(command_reg_t port){
 
 void ADS8688::update_sensor(BaseAnalogSensor& sensor) {
     uint8_t port = sensor.get_port();
-    int16_t sensor_voltage = 0;
+    uint16_t sensor_voltage = 0;
     switch (port)
     {
     case 0:
@@ -162,13 +160,7 @@ void ADS8688::update_sensor(BaseAnalogSensor& sensor) {
     default:
         break;
     }
-    //Accounts for negative voltages
-    if (sensor.get_vmin() < 0) {
-        sensor.set_raw( ( ((float)sensor_voltage/(1 << 15)) + 1 ) / 2 );
-    } else {
-        sensor.set_raw( (float)((uint16_t)sensor_voltage) / get_max() );
-    }
-
+    sensor.set_raw( ((float)sensor_voltage) / (1 << 16) );
     sensor.update_data();
 }
 
