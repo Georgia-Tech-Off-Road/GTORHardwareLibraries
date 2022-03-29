@@ -18,12 +18,15 @@ public:
 		}
 	}
 
+	void set_period(const uint32_t period) { _period = period; }
+
 	uint32_t get_prev_time(){ return _prev_time; }
 };
 
 class ClockTimerf : public ClockTimer {
 public:
 	ClockTimerf(const float frequency) : ClockTimer((uint32_t) (1000000 / frequency)) {}
+	void set_frequency (const float frequency) { set_period((uint32_t) (1000000 / frequency)); }
 };
 
 #endif
