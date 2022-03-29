@@ -1,5 +1,3 @@
-#include <Arduino.h>
-#include <SPI.h>
 #include "ADS8688.h"
 
 ADS8688::ADS8688(uint8_t CSPin){
