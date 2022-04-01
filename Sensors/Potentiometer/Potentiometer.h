@@ -41,7 +41,7 @@ public:
     /**
      * Constructor for the Potentiometer sensor
      */
-    Potentiometer(uint16_t full_scale_range, bool is_reversed = false);
+    Potentiometer(uint16_t full_scale_range = -1, bool is_reversed = false);
     void update_data();
 
 };

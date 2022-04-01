@@ -1,6 +1,6 @@
 #include <SpeedSensor.h>
 
-SpeedSensor he_sensor_1(600, 23, 255, SPEED_ONLY);
+SpeedSensor he_sensor_1(600, 15, 255, SPEED_ONLY);
 
 uint32_t temp = 0;
 //bool led_on = 0;

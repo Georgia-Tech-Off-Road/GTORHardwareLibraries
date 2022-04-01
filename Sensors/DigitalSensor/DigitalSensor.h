@@ -16,19 +16,26 @@
  *      - This will update the sensor to be used by the communication utility
  */
 
-#ifndef BUTTONSENSOR_H
-#define BUTTONSENSOR_H
+#ifndef DIGITALSENSOR_H
+#define DIGITALSENSOR_H
 
 #include <Block.h>
 
-class ButtonSensor : public Block<bool>{
+class DigitalSensor : public Block<bool>{
 private:
     uint8_t _pin;
+    uint8_t _mode;
 public:
-    ButtonSensor(uint8_t pin) : _pin(pin){}
+    DigitalSensor() : _pin(-1), _mode(INPUT) {}
 
-    void begin() pinMode(_pin, INPUT);    
-    void update() this->set_data(digitalRead(_pin));
+    void begin(uint8_t pin, uint8_t mode = INPUT) {
+        _pin = pin;
+        _mode = mode;
+        pinMode(_pin, _mode);
+    }
+    void update() { 
+        this->set_data(digitalRead(_pin));
+    }
 };
 
 #endif

@@ -12,6 +12,7 @@ static time_t getTeensy3Time()
  */
 SDComms::SDComms(uint8_t port) : 
     _port(port),
+    _writecommand(NULL),
     _sending_period_us(10000),
     _time_at_last_send(0) { }
 
@@ -34,7 +35,10 @@ void SDComms::begin(const char* filename){
     } else {
         _filename = String(filename);
     }
+}
 
+void SDComms::attach_writecommand_block(Block<bool>* writecommand){
+    _writecommand = writecommand;
 }
 
 void SDComms::read_packet() {
@@ -43,20 +47,22 @@ void SDComms::read_packet() {
 
 void SDComms::send_packet() {
     // if time_interval < passed time, continue
-    uint32_t time_current = micros();
-    if(abs(time_current - _time_at_last_send) >= _sending_period_us){
-        packetize();
-        // File datafile = SD.open(_filename.c_str(), FILE_WRITE);
-        // File datafile = SD.open("bruh.bin", FILE_WRITE);
-        // FsFile datafile = SD.sdfs.open(_filename.c_str(), O_WRITE | O_CREAT);
+    if(_writecommand->get_data() == 1){
+        uint32_t time_current = micros();
+        if(abs(time_current - _time_at_last_send) >= _sending_period_us){
+            packetize();
+            // File datafile = SD.open(_filename.c_str(), FILE_WRITE);
+            // File datafile = SD.open("bruh.bin", FILE_WRITE);
+            // FsFile datafile = SD.sdfs.open(_filename.c_str(), O_WRITE | O_CREAT);
 
-        FsFile datafile;
-        datafile.open(_filename.c_str(), O_WRITE | O_CREAT | O_APPEND);
-        datafile.write(_packet_send.data(), _packet_send.size());
-        datafile.close();
+            FsFile datafile;
+            datafile.open(_filename.c_str(), O_WRITE | O_CREAT | O_APPEND);
+            datafile.write(_packet_send.data(), _packet_send.size());
+            datafile.close();
 
-        _time_at_last_send = time_current;
-        _packet_send.clear();
+            _time_at_last_send = time_current;
+            _packet_send.clear();
+        }
     }
 }
 

@@ -96,16 +96,20 @@ class SpeedSensor : public Block<speed_sensor_data_t>
 {
 public:
     // Set pin2 to 255 if it is not used
-	SpeedSensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255, uint8_t flag = 2) {
+	SpeedSensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255, uint8_t flag = 2) :
+        _pin1(pin1), _pin2(pin2), _flag(flag) {
         _encoder.ppr = ppr;
         _encoder.prev_update_time = micros();
         _encoder.prev_tick_time = micros();
         _encoder.update_interval = 500000 / sqrt(ppr);
         _encoder.num_ticks = 1;
 
-        pinMode(pin1, INPUT_PULLUP);
-        _encoder.pin1_register = PIN_TO_BASEREG(pin1);
-		_encoder.pin1_bitmask = PIN_TO_BITMASK(pin1);
+	}
+
+    void begin() {
+        pinMode(_pin1, INPUT_PULLUP);
+        _encoder.pin1_register = PIN_TO_BASEREG(_pin1);
+		_encoder.pin1_bitmask = PIN_TO_BITMASK(_pin1);
         _encoder.position = 0;
         _encoder.speed = 0;
         // allow time for a passive R-C filter to charge
@@ -115,29 +119,27 @@ public:
         uint8_t s = 0;
         if (DIRECT_PIN_READ(_encoder.pin1_register, _encoder.pin1_bitmask)) s |= 1;
 
-        if (pin2 != 255){
-            pinMode(pin2, INPUT_PULLUP);
-            _encoder.pin2_register = PIN_TO_BASEREG(pin2);
-		    _encoder.pin2_bitmask = PIN_TO_BITMASK(pin2);
+        if (_pin2 != 255){
+            pinMode(_pin2, INPUT_PULLUP);
+            _encoder.pin2_register = PIN_TO_BASEREG(_pin2);
+		    _encoder.pin2_bitmask = PIN_TO_BITMASK(_pin2);
             if (DIRECT_PIN_READ(_encoder.pin2_register, _encoder.pin2_bitmask)) s |= 2;
         }
         else{
             _encoder.pin2_bitmask = 255;
         }
 		_encoder.state = s;
-        attach_interrupt(pin1, &_encoder, CHANGE);
-        if (pin2 != 255) attach_interrupt(pin2, &_encoder, CHANGE);
-
-        _flag = flag;
+        attach_interrupt(_pin1, &_encoder, CHANGE);
+        if (_pin2 != 255) attach_interrupt(_pin2, &_encoder, CHANGE);
 
         if (_flag == POSITION_AND_SPEED){ // Position and speed
-            set_packlen(sizeof(uint_fast16_t) + sizeof(uint_fast32_t));
+            set_packlen(sizeof(uint16_t) + sizeof(uint32_t));
         } else if (_flag == SPEED_ONLY){ // Just speed
-            set_packlen(sizeof(uint_fast16_t));
+            set_packlen(sizeof(uint16_t));
         } else if (_flag == POSITION_ONLY){ // Just position
-            set_packlen(sizeof(uint_fast32_t));
+            set_packlen(sizeof(uint32_t));
         }
-	}
+    }
 
     inline int32_t get_position() {
         noInterrupts();
@@ -206,6 +208,8 @@ public:
 
 private:
 	Encoder_internal_state_t _encoder;
+    uint8_t _pin1;
+    uint8_t _pin2;
     uint8_t _flag;
 
 public:
