@@ -1,5 +1,3 @@
-#include <Arduino.h>
-#include <SPI.h>
 #include "ADS8688.h"
 
 ADS8688::ADS8688(uint8_t CSPin){
@@ -126,6 +124,7 @@ uint16_t ADS8688::get_sample(command_reg_t port){
     port_voltage = SPI.transfer16(NO_OP);
     digitalWrite(_CSPin, HIGH);
     SPI.endTransaction();
+    Serial.println(port_voltage,HEX);
     return port_voltage;
 }
 

@@ -1,25 +1,27 @@
 
 #include <SPI.h>
+#include <Arduino.h>
+#include <ADS8688.h>
+#include <LDS.h>
 
-uint16_t port_voltage = 0;
-uint16_t write_message = (0x0B << 8)|0b00000110;
-uint8_t NCSPIN = 10;
+ADS8688 ads(35);
+LDS<uint16_t> lds(100);
     
 void setup() {
+  ads.attach_sensor(lds,22); //22 is pin on teensy
   SPI.begin();
-  pinMode(NCSPIN, OUTPUT);
+  ads.begin(34); //34 is chip select for ADC
 
 
 }
 
 void loop() {
+    lds.update();
+    if(serialTimer.ready(micros())){
+      Serial.print(lds.get_data());
     
-    SPI.beginTransaction(SPISettings(17000000, MSBFIRST, SPI_MODE0)); // Might be mode 1
-    digitalWrite(NCSPIN, LOW);
-    SPI.transfer16(write_message);
-    port_voltage = SPI.transfer(0);
-    digitalWrite(NCSPIN, HIGH);
-    SPI.endTransaction();
-    Serial.print(port_voltage,BIN);
+    }
+
+}
 
 }
