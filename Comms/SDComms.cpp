@@ -37,6 +37,18 @@ void SDComms::begin(const char* filename){
     }
 }
 
+/*
+ * @brief Sets the period (1/freq) of how often to write to the SD card. By default this is set
+ * to 10000us (100 Hz), but it can be changed through this function
+ */
+void SDComms::set_sending_period(uint32_t sending_period_us){
+    _sending_period_us = sending_period_us;
+}
+
+uint32_t SDComms::get_sending_period(){
+    return _sending_period_us;
+}
+
 void SDComms::attach_writecommand_block(Block<bool>& writecommand){
     _writecommand = &writecommand;
 }

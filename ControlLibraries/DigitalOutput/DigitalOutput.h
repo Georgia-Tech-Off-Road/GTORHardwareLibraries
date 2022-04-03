@@ -2,32 +2,35 @@
 #define DIGITALOUTPUT_H
 
 #include <functional>
+#include "Block.h"
 
 #define MAKE_CB(cb) ([](){ return cb; })
 
-class DigitalOutput {
+class DigitalOutput : public Block<bool> {
 private:
     uint8_t _pin;
-    uint8_t _state;
     std::function<bool()> _setcb;
     std::function<bool()> _flipcb;
 
 public:
-    DigitalOutput() : _pin(-1), _state(0), _setcb(NULL), _flipcb(NULL) { }
+    DigitalOutput() : _pin(-1), _setcb(NULL), _flipcb(NULL) { }
 
     void begin(uint8_t pin, uint8_t init_state = 0){
         _pin = pin;
         _setcb = NULL;
         _flipcb = NULL;
-        _state = init_state;
+        this->set_data(init_state);
         pinMode(_pin, OUTPUT);
-        digitalWrite(_pin, _state);
+        digitalWrite(_pin, this->get_data());
     }
 
-    void set(bool set) { digitalWrite(_pin, set); }
+    void set(bool state) { 
+        set_data(state);
+        if(_pin != -1) digitalWrite(_pin, this->get_data()); 
+    }
     void on () { set(1); }
     void off() { set(0); }
-    void flip() { _state = !_state; set(!_state); }
+    void flip() { set(!this->get_data()); }
 
     void set_setcb(std::function<bool()> setcb) {
         _setcb = setcb;
