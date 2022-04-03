@@ -8,7 +8,7 @@ protected:
 public:
 	ClockTimer(const uint32_t period) : _prev_time(0), _period(period) {}
 
-	bool ready(uint32_t time){
+	bool ready(uint32_t time = micros()){
 		if(abs(time - _prev_time) >= _period){
 			if(_prev_time + _period < time) _prev_time += _period;
 			else _prev_time = time;

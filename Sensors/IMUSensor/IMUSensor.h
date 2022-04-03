@@ -8,13 +8,14 @@
 class IMUSensor : public Block<imu_data_t> {
 private:
     Adafruit_ISM330DHCX _ism;
-    const uint8_t _cs;
+    uint8_t _cs;
 public:
-    IMUSensor(uint8_t cs) : _cs(cs) { 
+    IMUSensor() : _cs(-1) { 
         _packlen = sizeof(float) * 7; 
     }
     
-    void begin() { 
+    void begin(uint8_t cs) { 
+        _cs = cs;
         _ism.begin_SPI(_cs);
         _ism.setAccelRange(LSM6DS_ACCEL_RANGE_16_G);
         _ism.setGyroRange(LSM6DS_GYRO_RANGE_2000_DPS);
@@ -64,6 +65,21 @@ public:
 
     float get_temp() {
         return _data.temperature;
+    }
+
+    void printall() {
+        Serial.print(get_accel_x()); Serial.print(", ");
+        Serial.print(get_accel_y()); Serial.print(", ");
+        Serial.print(get_accel_z()); Serial.print(", ");
+        Serial.print(get_gyro_x()); Serial.print(", ");
+        Serial.print(get_gyro_y()); Serial.print(", ");
+        Serial.print(get_gyro_z()); Serial.print(", ");
+        Serial.print(get_temp());
+    }
+    void printaccel() {
+        Serial.print(get_accel_x()); Serial.print(", ");
+        Serial.print(get_accel_y()); Serial.print(", ");
+        Serial.print(get_accel_z());
     }
 
     void pack(byte* pack){

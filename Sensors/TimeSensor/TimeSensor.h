@@ -13,6 +13,8 @@ private:
 public:
     TimeSensor(time_type_e time_type = MICROS) : 
         _time_type(time_type) { }
+    
+    void begin() { update(); }
 
     void update() {
         if(_time_type == MICROS) _data = micros();

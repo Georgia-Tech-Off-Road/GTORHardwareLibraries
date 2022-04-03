@@ -25,7 +25,7 @@ public:
     SDComms(uint8_t port = -1);
     void begin(const char* filename);
     const uint8_t get_port();
-    void attach_writecommand_block(Block<bool>* writecommand);
+    void attach_writecommand_block(Block<bool>& writecommand);
 };
 
 

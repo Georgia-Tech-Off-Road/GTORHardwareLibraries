@@ -37,8 +37,8 @@ void SDComms::begin(const char* filename){
     }
 }
 
-void SDComms::attach_writecommand_block(Block<bool>* writecommand){
-    _writecommand = writecommand;
+void SDComms::attach_writecommand_block(Block<bool>& writecommand){
+    _writecommand = &writecommand;
 }
 
 void SDComms::read_packet() {
@@ -47,7 +47,11 @@ void SDComms::read_packet() {
 
 void SDComms::send_packet() {
     // if time_interval < passed time, continue
-    if(_writecommand->get_data() == 1){
+    bool send = 1;
+    if(_writecommand){
+        send = _writecommand->get_data();
+    }
+    if(send){
         uint32_t time_current = micros();
         if(abs(time_current - _time_at_last_send) >= _sending_period_us){
             packetize();

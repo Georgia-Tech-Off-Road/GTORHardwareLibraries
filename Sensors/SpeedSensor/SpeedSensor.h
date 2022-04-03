@@ -104,8 +104,8 @@ class SpeedSensor : public Block<speed_sensor_data_t>
 {
 public:
     // Set pin2 to 255 if it is not used
-	SpeedSensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255, uint32_t max_timeavg = DEFAULT_TIMEAVG, uint8_t flag = 2) :
-        _pin1(pin1), _pin2(pin2), _flag(flag) {
+	SpeedSensor(uint16_t ppr, uint32_t max_timeavg = DEFAULT_TIMEAVG, uint8_t flag = 2) :
+        _pin1(-1), _pin2(-1), _flag(flag) {
         _encoder.ppr = ppr;
         _encoder.prev_update_time = micros();
         _encoder.prev_tick_time = micros();
@@ -117,7 +117,7 @@ public:
         //memset(_encoder.timeticks, 0, 2*MAX_TICKVEC_SIZE);
 	}
 
-    void begin() {
+    void begin(uint8_t pin1, uint8_t pin2 = 255) {
         pinMode(_pin1, INPUT_PULLUP);
         _encoder.pin1_register = PIN_TO_BASEREG(_pin1);
 		_encoder.pin1_bitmask = PIN_TO_BITMASK(_pin1);
