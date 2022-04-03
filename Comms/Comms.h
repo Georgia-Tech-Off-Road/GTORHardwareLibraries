@@ -102,6 +102,8 @@ public:
     uint8_t get_expected_receive_bytes();
     uint8_t get_expected_transmit_bytes();
 
+    // void multiple_attach_output_block(BaseBlock &block, block_id_t id, std::vector<Comms*> comms);
+
     friend class SDComms;
     friend class SerialComms;
 };
