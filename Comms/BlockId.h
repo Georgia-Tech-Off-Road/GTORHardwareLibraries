@@ -5,7 +5,7 @@ go to Application>DataAcquisition>SensorId.py and edit the dictionary there. The
 this file by using Application>GenerateSensorIdHFile.py (It will automatically place the
 file in the correct location i.e. Libraries>Comms>BlockId.h)
 
-Generated at: 2022-03-31 19:29:36.192988
+Generated at: 2022-04-02 22:02:49.559891
 
 *******************************************************************************************/
 
@@ -71,8 +71,8 @@ enum block_id_t : uint16_t
 	SPEED_ENGINE600_RPM             = 209,	//NumBytes: 2 - Speed in RPM (600ppr sensor)
 	SPEED_ENGINE4_RPM               = 210,	//NumBytes: 2 - Speed in RPM (4ppr sensor)
 	SPEED_SECONDARY30_RPM           = 211,	//NumBytes: 2 - Speed in RPM (30ppr sensor)
-	SPEED_DYNOENGINE600_RPM         = 212,	//NumBytes: [4, 4] - Speed in RPM and position in ticks (600ppr sensor)
-	SPEED_DYNOSECONDARY30_RPM       = 213,	//NumBytes: [4, 4] - Speed in RPM and position in ticks (600ppr sensor)
+	SPEED_DYNOENGINE600_RPM         = 212,	//NumBytes: [4, 2] - Speed in RPM and position in ticks (600ppr sensor)
+	SPEED_DYNOSECONDARY30_RPM       = 213,	//NumBytes: [4, 2] - Speed in RPM and position in ticks (600ppr sensor)
 	SPEED_2021CAR_ENGINE600_RPM     = 214,	//NumBytes: [4, 2] - Speed in RPM and position in ticks (600ppr sensor)
 	SPEED_2021CAR_SECONDARY30_RPM   = 215,	//NumBytes: [4, 2] - Speed in RPM and position in ticks (600ppr sensor)
 
@@ -95,11 +95,12 @@ enum block_id_t : uint16_t
      * 400 - LDS SENSORS
      */
 	LDS_GENERIC                     = 400,	//NumBytes: 1
-	LDS_FRONTLEFTSHOCK_MM           = 401,	//NumBytes: 1
-	LDS_FRONTRIGHTSHOCK_MM          = 402,	//NumBytes: 1
-	LDS_BACKLEFTSHOCK_MM            = 403,	//NumBytes: 1
-	LDS_BACKRIGHTSHOCK_MM           = 404,	//NumBytes: 1
+	LDS_FRONTLEFTSHOCK_MM           = 401,	//NumBytes: 4
+	LDS_FRONTRIGHTSHOCK_MM          = 402,	//NumBytes: 4
+	LDS_BACKLEFTSHOCK_MM            = 403,	//NumBytes: 4
+	LDS_BACKRIGHTSHOCK_MM           = 404,	//NumBytes: 4
 	LDS_SHOCKDYNO_MM                = 405,	//NumBytes: 1
+	LDS_PEDAL_MM                    = 406,	//NumBytes: 4 - This sensor probably only used for testing day 4/2/22
 
     /**
      * 500 - IMU SENSORS
