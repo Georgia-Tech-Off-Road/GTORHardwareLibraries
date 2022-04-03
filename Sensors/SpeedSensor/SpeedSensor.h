@@ -67,6 +67,9 @@
 #define SPEED_ONLY 1
 #define POSITION_AND_SPEED 2
 
+#define MAX_TICKVEC_SIZE 1000
+#define DEFAULT_TIMEAVG  10000 // microseconds
+
 #if defined(ENCODER_USE_INTERRUPTS) || !defined(ENCODER_DO_NOT_USE_INTERRUPTS)
 #define ENCODER_USE_INTERRUPTS
 #define ENCODER_ARGLIST_SIZE CORE_NUM_INTERRUPT
@@ -90,20 +93,28 @@ typedef struct {
     uint32_t               prev_tick_time;
     uint32_t               update_interval;
     uint32_t               num_ticks;
+    // ADDED
+    uint32_t timeticks[MAX_TICKVEC_SIZE];
+    uint16_t timetickstart;
+    uint16_t timetickend;
+    uint32_t max_timeavg;
 } Encoder_internal_state_t;
 
 class SpeedSensor : public Block<speed_sensor_data_t>
 {
 public:
     // Set pin2 to 255 if it is not used
-	SpeedSensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255, uint8_t flag = 2) :
+	SpeedSensor(uint16_t ppr, uint8_t pin1, uint8_t pin2 = 255, uint32_t max_timeavg = DEFAULT_TIMEAVG, uint8_t flag = 2) :
         _pin1(pin1), _pin2(pin2), _flag(flag) {
         _encoder.ppr = ppr;
         _encoder.prev_update_time = micros();
         _encoder.prev_tick_time = micros();
         _encoder.update_interval = 500000 / sqrt(ppr);
         _encoder.num_ticks = 1;
-
+        _encoder.timetickstart = 0;
+        _encoder.timetickend = 0;
+        _encoder.max_timeavg = max_timeavg;
+        //memset(_encoder.timeticks, 0, 2*MAX_TICKVEC_SIZE);
 	}
 
     void begin() {
@@ -160,19 +171,42 @@ public:
         interrupts();
     }    
     inline uint16_t get_speed(){
-        noInterrupts(); 
-        uint16_t rpm = 0;
-        
-        // If measurement hasn't been taken in a while, assume it is slowing down
-        if ((60*1000*1000 / abs(micros() - _encoder.prev_tick_time) / _encoder.ppr) * 1.2 < _encoder.speed){
-            rpm = 60*1000*1000 / abs(micros() - _encoder.prev_tick_time) / _encoder.ppr;
+        noInterrupts();
+
+        while (abs(_encoder.timeticks[_encoder.timetickend] - _encoder.timeticks[_encoder.timetickstart]) > _encoder.max_timeavg) {
+            if(++(_encoder.timetickstart) >= MAX_TICKVEC_SIZE) _encoder.timetickstart = 0;
         }
-        else {
+        float num_ticks = 0;
+        if      (_encoder.timetickstart < _encoder.timetickend) num_ticks = _encoder.timetickend - _encoder.timetickstart;
+        else if (_encoder.timetickstart > _encoder.timetickend) num_ticks = MAX_TICKVEC_SIZE + _encoder.timetickend - _encoder.timetickstart;
+        
+        float f_speed = 60.0*1000.0*1000.0 * (float)num_ticks / (float)(abs(_encoder.timeticks[_encoder.timetickend] - _encoder.timeticks[_encoder.timetickstart]) * _encoder.ppr);
+        _encoder.speed = (uint16_t)f_speed;
+
+        uint16_t rpm = _encoder.speed;
+        if(abs(micros() - _encoder.timeticks[_encoder.timetickend]) > _encoder.max_timeavg) {
+            float f_rpm = 60.0*1000.0*1000.0 / (float)(abs(micros() - _encoder.timeticks[_encoder.timetickend]) * _encoder.ppr);
+            rpm = (uint16_t) f_rpm;
+        } else {
             rpm = _encoder.speed;
         }
-
         interrupts();
         return rpm;
+        
+        // OLD LOGIC
+        // noInterrupts(); 
+        // uint16_t rpm = 0;
+        
+        // // If measurement hasn't been taken in a while, assume it is slowing down
+        // if ((60*1000*1000 / abs(micros() - _encoder.prev_tick_time) / _encoder.ppr) * 1.2 < _encoder.speed){
+        //     rpm = 60*1000*1000 / abs(micros() - _encoder.prev_tick_time) / _encoder.ppr;
+        // }
+        // else {
+        //     rpm = _encoder.speed;
+        // }
+
+        // interrupts();
+        // return rpm;
     }
     void update(){
         if (_flag == POSITION_AND_SPEED){
@@ -248,21 +282,41 @@ public:
 	// but it is public to allow static interrupt routines.
 	// DO NOT call isr_update() directly from sketches.
 	static void isr_update(Encoder_internal_state_t *arg) {
+        // uint32_t curr_time = micros();
         if(arg->pin2_bitmask==255){
             uint8_t p1val = DIRECT_PIN_READ(arg->pin1_register, arg->pin1_bitmask);
             if (p1val && !arg->state){
                 arg->position++;
-                if (abs(micros() - arg->prev_update_time) > arg->update_interval){
-                    float f_speed = 60.0*1000.0*1000.0 * (float)arg->num_ticks / (float)(abs(micros() - arg->prev_update_time) * arg->ppr);
-                    arg->speed = (uint16_t)f_speed;
-                    arg->prev_update_time = micros();
-                    arg->prev_tick_time =  micros();
-                    arg->num_ticks = 1;
-                }
-                else {
-                    arg->prev_tick_time = micros();
-                    arg->num_ticks++;
-                }            
+                // TIME AVERAGING
+                if(++(arg->timetickend) >= MAX_TICKVEC_SIZE) arg->timetickend = 0;
+                arg->timeticks[arg->timetickend] = micros();
+                // while (abs(arg->timeticks[arg->timetickend] - arg->timeticks[arg->timetickstart]) > arg->max_timeavg) {
+                //     if(++(arg->timetickstart) > MAX_TICKVEC_SIZE) arg->timetickstart = 0;
+                // }
+                // float num_ticks = 0;
+                // if      (arg->timetickstart < arg->timetickend) num_ticks = arg->timetickend - arg->timetickstart;
+                // else if (arg->timetickstart > arg->timetickend) num_ticks = MAX_TICKVEC_SIZE + arg->timetickend - arg->timetickstart;
+                
+                // float f_speed = 60.0*1000.0*1000.0 * (float)num_ticks / (float)(abs(arg->timeticks[arg->timetickend] - arg->timeticks[arg->timetickstart]) * arg->ppr);
+                // arg->speed = (uint16_t)f_speed;
+
+                // Unsure which of the following is necessary. Leaving just in case
+                // arg->prev_update_time = curr_time;
+                // arg->prev_tick_time =  curr_time;
+                // arg->num_ticks = 1;
+
+                // OLD LOGIC :
+                // if (abs(micros() - arg->prev_update_time) > arg->update_interval){
+                //     float f_speed = 60.0*1000.0*1000.0 * (float)arg->num_ticks / (float)(abs(micros() - arg->prev_update_time) * arg->ppr);
+                //     arg->speed = (uint16_t)f_speed;
+                //     arg->prev_update_time = micros();
+                //     arg->prev_tick_time =  micros();
+                //     arg->num_ticks = 1;
+                // }
+                // else {
+                //     arg->prev_tick_time = micros();
+                //     arg->num_ticks++;
+                // }            
             }
             arg->state = p1val;
         }
