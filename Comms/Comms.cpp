@@ -325,3 +325,9 @@ void Comms::detach_output_block(block_id_t id){
     _detached_blocks.push_back(id);
 }
 
+void Comms::multiple_attach_output_block(BaseBlock &block, block_id_t id, std::vector<Comms*> comms){
+    for(auto it = comms.begin(); it != comms.end(); it++){
+        (*it)->attach_output_block(block, id);
+    }
+}
+
