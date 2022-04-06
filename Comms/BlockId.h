@@ -5,7 +5,7 @@ go to Application>DataAcquisition>SensorId.py and edit the dictionary there. The
 this file by using Application>GenerateSensorIdHFile.py (It will automatically place the
 file in the correct location i.e. Libraries>Comms>BlockId.h)
 
-Generated at: 2022-04-02 23:32:46.708241
+Generated at: 2022-04-05 22:10:35.601253
 
 *******************************************************************************************/
 
@@ -84,8 +84,8 @@ enum block_id_t : uint16_t
 	FORCE_GENERIC                   = 301,	//NumBytes: 4
 	BRAKE_SENSOR1                   = 302,	//NumBytes: 4
 	BRAKE_SENSOR2                   = 303,	//NumBytes: 4
-	PRESSURE_FRONTBRAKE_PSI         = 304,	//NumBytes: 2
-	PRESSURE_REARBRAKE_PSI          = 305,	//NumBytes: 2
+	PRESSURE_FRONTBRAKE_PSI         = 304,	//NumBytes: 4
+	PRESSURE_REARBRAKE_PSI          = 305,	//NumBytes: 4
 	FORCE_ENGINEDYNO_LBS            = 306,	//NumBytes: 4
 	FORCE_SHOCKDYNO_LBS             = 307,	//NumBytes: 4
 	WHEEL_FORCE_TRANSDUCER_ANALOG_1 = 308,	//NumBytes: [4, 4, 4, 4] - FX, FY, FZ, MX
