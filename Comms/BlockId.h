@@ -5,7 +5,7 @@ go to Application>DataAcquisition>SensorId.py and edit the dictionary there. The
 this file by using Application>GenerateSensorIdHFile.py (It will automatically place the
 file in the correct location i.e. Libraries>Comms>BlockId.h)
 
-Generated at: 2022-04-05 22:16:05.818746
+Generated at: 2022-04-10 17:52:50.518966
 
 *******************************************************************************************/
 
@@ -91,7 +91,8 @@ enum block_id_t : uint16_t
 	WHEEL_FORCE_TRANSDUCER_ANALOG_1 = 308,	//NumBytes: [4, 4, 4, 4] - FX, FY, FZ, MX
 	WHEEL_FORCE_TRANSDUCER_ANALOG_2 = 309,	//NumBytes: [4, 4, 4, 4] - MY, MZ, Vel, Pos
 	WHEEL_FORCE_TRANSDUCER_ANALOG_3 = 310,	//NumBytes: [4, 4, 4, 4] - AccelX, AccelY
-	FORCE_STRAINGAUGE_LBS           = 311,	//NumBytes: 4
+	FORCE_STRAINGAUGE_STRAIN        = 311,	//NumBytes: 4
+	LOADCELL_CHASSISSTIFFNESS_LBS   = 312,	//NumBytes: 4
 
     /**
      * 400 - LDS SENSORS
