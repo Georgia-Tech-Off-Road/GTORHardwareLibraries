@@ -114,10 +114,12 @@ public:
         _encoder.timetickstart = 0;
         _encoder.timetickend = 0;
         _encoder.max_timeavg = max_timeavg;
-        //memset(_encoder.timeticks, 0, 2*MAX_TICKVEC_SIZE);
+        // memset(_encoder.timeticks, 0, 2*MAX_TICKVEC_SIZE);
 	}
 
     void begin(uint8_t pin1, uint8_t pin2 = 255) {
+        _pin1 = pin1;
+        _pin2 = pin2;
         pinMode(_pin1, INPUT_PULLUP);
         _encoder.pin1_register = PIN_TO_BASEREG(_pin1);
 		_encoder.pin1_bitmask = PIN_TO_BITMASK(_pin1);

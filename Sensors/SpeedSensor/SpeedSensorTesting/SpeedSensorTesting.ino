@@ -1,6 +1,6 @@
-#include <SpeedSensor.h>
+#include "SpeedSensor.h"
 
-SpeedSensor he_sensor_1(600, 2, 255, 10000, 2);
+SpeedSensor he_sensor_1(600, 10000, 2);
 
 uint32_t temp = 0;
 bool led_on = 0;
@@ -9,7 +9,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   pinMode(13, OUTPUT);
-  he_sensor_1.begin();
+  he_sensor_1.begin(22);
 
   delay(100);
 }
