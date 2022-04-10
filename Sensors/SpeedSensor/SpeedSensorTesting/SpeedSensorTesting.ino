@@ -1,4 +1,4 @@
-#include <SpeedSensor.h>
+#include "SpeedSensor.h"
 
 SpeedSensor he_sensor_1(600, 10000, 2);
 
