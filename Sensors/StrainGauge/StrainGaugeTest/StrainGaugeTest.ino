@@ -17,7 +17,7 @@ ClockTimerf serialTimer(100);
 
 void setup() {
   tadc.attach_sensor(strain, A0);
-  strain.set_scale(32.33);
+  strain.set_scale(0.6);
   Serial.begin(115200);
   strain.update();
   strain.tare();

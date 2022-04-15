@@ -11,7 +11,7 @@ ClockTimerf serialTimer(1000);
 void setup() {
   // put your setup code here, to run once:
   tadc.attach_sensor(strain, TEENSY_PORT);
-  strain.set_scale(32.33);
+  strain.set_scale(0.6);
   Serial.begin(115200);
   strain.update();
   strain.tare();
