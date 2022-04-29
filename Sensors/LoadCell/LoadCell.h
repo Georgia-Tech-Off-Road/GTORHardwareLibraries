@@ -38,7 +38,7 @@
 class LoadCell : public AnalogSensor<float> {
     private:
         float _offset;
-        float _scale;
+        float _scale = 1;
     public:
         void update_data();
         void tare();
