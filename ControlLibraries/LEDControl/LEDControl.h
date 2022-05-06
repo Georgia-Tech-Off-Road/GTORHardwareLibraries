@@ -21,6 +21,7 @@
 #define LEDCONTROL_H
 
 #include <Arduino.h>
+#include <ClockTimer.h>
 
 class LEDControl {
 private:
