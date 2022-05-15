@@ -5,7 +5,7 @@ go to Application>DataAcquisition>SensorId.py and edit the dictionary there. The
 this file by using Application>GenerateSensorIdHFile.py (It will automatically place the
 file in the correct location i.e. Libraries>Comms>BlockId.h)
 
-Generated at: 2022-05-15 04:24:29.264229
+Generated at: 2022-05-15 04:31:27.778681
 
 *******************************************************************************************/
 
@@ -31,7 +31,7 @@ enum block_id_t : uint16_t
 	GPS_SENSOR                      = 8,	//NumBytes: [4, 4, 4] - Contains lattitude, longitude, and speed (knots)
 	COMMAND_AUXDAQ_SDWRITE          = 9,	//NumBytes: 1
 	FLAG_AUXDAQ_SDWRITE             = 10,	//NumBytes: 1
-	DASHBOARD_GPS_SENSOR            = 11,	//NumBytes: [4, 4, 4] - ECEF X, Y, Z
+	DASHBOARD_GPS_SENSOR            = 11,	//NumBytes: [4, 4, 4] - ECEF X, Y, Z (in cm)
 	TEST_SENSOR_0                   = 90,	//NumBytes: 4
 	TEST_SENSOR_1                   = 91,	//NumBytes: 4
 	TEST_SENSOR_2                   = 92,	//NumBytes: 4
