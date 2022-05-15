@@ -20,13 +20,14 @@
 #ifndef LEDCONTROL_H
 #define LEDCONTROL_H
 
+// #include "ClockTimer.h"
 #include <Arduino.h>
 
 class LEDControl {
 private:
     bool _state;
     uint8_t _pin;
-    ClockTimerf _ct;
+    // ClockTimerf _ct;
     float _freq;
     uint32_t _period;
     uint32_t _last_updated;
