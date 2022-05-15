@@ -5,7 +5,7 @@ go to Application>DataAcquisition>SensorId.py and edit the dictionary there. The
 this file by using Application>GenerateSensorIdHFile.py (It will automatically place the
 file in the correct location i.e. Libraries>Comms>BlockId.h)
 
-Generated at: 2022-04-10 17:52:50.518966
+Generated at: 2022-05-15 00:17:26.762106
 
 *******************************************************************************************/
 
@@ -109,6 +109,7 @@ enum block_id_t : uint16_t
      * 500 - IMU SENSORS
      */
 	IMU_SENSOR                      = 500,	//NumBytes: [4, 4, 4, 4, 4, 4, 4] - Accel X, Y, Z; Gyro X, Y, Z; Temp
+	DASHBOARD_IMU_WT901             = 501,	//NumBytes: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4] - Accel X, Y, Z; Roll, Pitch, Yaw; Quaternion 1, 2, 3, 4
 
 
     MAX_SENSOR_NUM = 65535
