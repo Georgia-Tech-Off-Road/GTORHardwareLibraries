@@ -4,7 +4,7 @@ WT901::WT901(HardwareSerial& port) :
     _port(&port),
     _baudrate(B9600),
     _baud(9600) { 
-    _packlen = 8;
+    _packlen = 40;
     arm_rfft_fast_init_f32(&acc_fft_inst, ACC_FFT_LEN);
     for(int i = 0; i < ACC_FFT_LEN; ++i) {
         acc_fft_buf[i] = 0;
@@ -173,7 +173,7 @@ void WT901::pack(byte* pack){
     *(p++) = (float) _data.quat.q[3] / (32768);
 }
 void WT901::unpack(const byte* pack){
-    const float* p = (const float*) pack;
-    (this->_data).gps.latitude = *(p++);
-    (this->_data).gps.longitude = *(p++);
+    // const float* p = (const float*) pack;
+    // (this->_data).gps.latitude = *(p++);
+    // (this->_data).gps.longitude = *(p++);
 }

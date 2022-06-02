@@ -20,9 +20,8 @@
 #ifndef LEDCONTROL_H
 #define LEDCONTROL_H
 
-// #include "ClockTimer.h"
 #include <Arduino.h>
-#include <ClockTimer.h>
+// #include <ClockTimer.h>
 
 class LEDControl {
 private:

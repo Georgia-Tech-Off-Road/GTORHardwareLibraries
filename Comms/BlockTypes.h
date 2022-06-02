@@ -86,7 +86,7 @@ struct WT901_data_t {
         uint32_t velocity;
     } gpsv;
     struct {
-        uint16_t q[4];
+        int16_t q[4];
     } quat;
     struct {
         uint16_t satquan;
@@ -99,6 +99,15 @@ struct WT901_data_t {
     float speed;
 };
 template class Block<WT901_data_t>;
+
+struct Neo6M_data_t {
+    // int32_t lon;
+    // int32_t lat;
+    int32_t ecefp[3];
+    int32_t ecefv[3];
+    uint16_t length;
+};
+template class Block<Neo6M_data_t>;
 
 typedef struct {
     uint32_t position;
