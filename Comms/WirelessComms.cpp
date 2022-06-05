@@ -5,8 +5,8 @@
  */
 WirelessComms::WirelessComms(HardwareSerial &port) : 
     _port(&port),
-    _sending_period_us(40000),
-    _settings_period_us(500000),
+    _sending_period_us(100000),
+    _settings_period_us(1000000),
     _time_at_last_send(0),
     _time_at_last_read(0) { }
 
@@ -28,11 +28,11 @@ void WirelessComms::read_packet() {
         }
         _time_at_last_read = micros();
 
-        if(_packet_read.size() >= 8) {
+        if(_packet_read.size() >= 2) {
             bool is_end_of_packet = 1;
             int packet_size = _packet_read.size();
-            for (int i = 0; (i < 8 && is_end_of_packet); ++i){
-                if(_packet_read[packet_size - 8 + i] != _end_code[i]) is_end_of_packet = 0;
+            for (int i = 0; (i < 2 && is_end_of_packet); ++i){
+                if(_packet_read[packet_size - 2 + i] != _end_code[i]) is_end_of_packet = 0;
             }
             if(is_end_of_packet){
 		        // Serial.write(&_packet_read[0], _packet_read.size());
@@ -40,8 +40,8 @@ void WirelessComms::read_packet() {
                 _packet_read.clear();
             }
         }
-    } else if ((micros() - _time_at_last_read) > 1000000) {
-        _is_reading_data = 0; // If you haven't gotten a packet for longer than 1 second, assume you've lost connection
+    } else if ((micros() - _time_at_last_read) > 5000000) {
+        _is_reading_data = 0; // If you haven't gotten a packet for longer than 5 second, assume you've lost connection
         // Serial.println("no data");
     }
     // Serial.println("b");

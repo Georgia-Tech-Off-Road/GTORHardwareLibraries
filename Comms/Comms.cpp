@@ -12,8 +12,8 @@
  */
 
 end_code_t::end_code_t() {
-    for(uint8_t i = 0; i < 7; ++i) code[i] = 0xFF;
-    code[7] = 0xF0;
+    for(uint8_t i = 0; i < 1; ++i) code[i] = 0xFF;
+    code[1] = 0xF0;
 }
 
 const uint8_t& end_code_t::operator[] (uint8_t i) const {
@@ -80,8 +80,8 @@ void Comms::unpacketize() {
     // RECEIVING DATA
     if(sender_is_sending_data) { 
         if(get_expected_receive_bytes() == _packet_read.size()) { // packet lengths good
-            // Skip ACK byte.
-            const uint8_t *packet_loc = _packet_read.data() + 1;
+            _unpacketize_attempts = 0; // Reset number of packet misses in a row
+            const uint8_t *packet_loc = _packet_read.data() + 1; // Skip ACK byte.
             for(auto it = _received_blocks.begin(); it != _received_blocks.end(); it++){
                 // Unpack each received block, and move pointer to the next block.
                 (*it)->unpack(packet_loc);
@@ -91,7 +91,6 @@ void Comms::unpacketize() {
             // Wait for 10 packet length misses before requesting new settings.
             if(++_unpacketize_attempts > 10){
                 _is_reading_data = 0;
-                _unpacketize_attempts = 0;
             }
         }
     } 
@@ -110,7 +109,7 @@ void Comms::unpacketize() {
         // Skip ACK byte.
         const uint8_t *packet_loc = _packet_read.data() + 1; 
         // Skip end code.
-        const uint8_t * const packet_end = _packet_read.data() + _packet_read.size() - 9;
+        const uint8_t * const packet_end = _packet_read.data() + _packet_read.size() - 3;
 
         while (packet_loc < packet_end) {
             // Piece together ID using first two bytes.
@@ -205,7 +204,7 @@ void Comms::packetize() {
             }
         }
     }
-    for(int i = 0; i < 8; ++i) _packet_send.push_back(_end_code[i]);
+    for(int i = 0; i < 2; ++i) _packet_send.push_back(_end_code[i]);
 
     // if need to send settings:
     // settings will be a list of id/byte_length pair.
@@ -220,7 +219,7 @@ void Comms::packetize() {
 uint8_t Comms::get_expected_receive_bytes() {
     uint8_t bytes = 0;
     for(auto it = _received_blocks.begin(); it != _received_blocks.end(); it++) bytes += (*it)->get_packlen();
-    return (9 + bytes);
+    return (3 + bytes);
 }
 
 uint8_t Comms::get_expected_transmit_bytes() {
@@ -237,7 +236,7 @@ uint8_t Comms::get_expected_transmit_bytes() {
         }
     }
 
-    return (9 + bytes);
+    return (3 + bytes);
 }
 
 /*

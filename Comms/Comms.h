@@ -29,7 +29,7 @@
  */
 
 struct end_code_t {
-    uint8_t code[8];
+    uint8_t code[2];
     end_code_t();
     const uint8_t& operator[] (uint8_t i) const;
 };

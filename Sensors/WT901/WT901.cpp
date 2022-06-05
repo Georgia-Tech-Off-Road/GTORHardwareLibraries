@@ -4,7 +4,7 @@ WT901::WT901(HardwareSerial& port) :
     _port(&port),
     _baudrate(B9600),
     _baud(9600) { 
-    _packlen = 40;
+    _packlen = 8;
     arm_rfft_fast_init_f32(&acc_fft_inst, ACC_FFT_LEN);
     for(int i = 0; i < ACC_FFT_LEN; ++i) {
         acc_fft_buf[i] = 0;
@@ -68,35 +68,35 @@ void WT901::update() {
             for(uint8_t i = 0; i < 8; ++i){
                 out_buf[i] = _port->read();
             }
-            if (command == ACC) {
-                // Serial.print("TIMEDIFF: "); Serial.println(micros() - timer);
-                timer = micros();
-                float accx = (float) _data.acc.a[0] * 16 * G / (32768);
-                float accy = (float) _data.acc.a[1] * 16 * G / (32768);
-                float accz = (float) _data.acc.a[2] * 16 * G / (32768);
-                // Serial.print("accx: "); Serial.println(accx);
-                // Serial.print("accy: "); Serial.println(accy);
-                // Serial.print("accz: "); Serial.println(accz);
-                _data.acc_mag = sqrt(accx*accx + accy*accy + accz*accz);
-                // q15_t acc_mag = (q15_t) sqrt(_data.acc.a[0]*_data.acc.a[0] +
-                //                              _data.acc.a[1]*_data.acc.a[1] +
-                //                              _data.acc.a[2]*_data.acc.a[2] ); // may need to >> 1
-                // Serial.print("acc_mag: "); Serial.println(_data.acc_mag);
+            // if (command == ACC) {
+            //     // Serial.print("TIMEDIFF: "); Serial.println(micros() - timer);
+            //     timer = micros();
+            //     float accx = (float) _data.acc.a[0] * 16 * G / (32768);
+            //     float accy = (float) _data.acc.a[1] * 16 * G / (32768);
+            //     float accz = (float) _data.acc.a[2] * 16 * G / (32768);
+            //     // Serial.print("accx: "); Serial.println(accx);
+            //     // Serial.print("accy: "); Serial.println(accy);
+            //     // Serial.print("accz: "); Serial.println(accz);
+            //     _data.acc_mag = sqrt(accx*accx + accy*accy + accz*accz);
+            //     // q15_t acc_mag = (q15_t) sqrt(_data.acc.a[0]*_data.acc.a[0] +
+            //     //                              _data.acc.a[1]*_data.acc.a[1] +
+            //     //                              _data.acc.a[2]*_data.acc.a[2] ); // may need to >> 1
+            //     // Serial.print("acc_mag: "); Serial.println(_data.acc_mag);
 
-                if(++acc_fft_loc > ACC_FFT_LEN) acc_fft_loc = 0;
-                acc_fft_buf[acc_fft_loc] = _data.acc_mag;
-                acc_fft_buf[acc_fft_loc + ACC_FFT_LEN] = _data.acc_mag;
-                arm_rfft_fast_f32(&acc_fft_inst, &(acc_fft_buf[acc_fft_loc + 1]), out_fft_buf, 0);
-                // Serial.print("DC: "); Serial.println(out_fft_buf[0]);
-                // Serial.print("DC+1: "); Serial.println(out_fft_buf[1]);
+            //     if(++acc_fft_loc > ACC_FFT_LEN) acc_fft_loc = 0;
+            //     acc_fft_buf[acc_fft_loc] = _data.acc_mag;
+            //     acc_fft_buf[acc_fft_loc + ACC_FFT_LEN] = _data.acc_mag;
+            //     arm_rfft_fast_f32(&acc_fft_inst, &(acc_fft_buf[acc_fft_loc + 1]), out_fft_buf, 0);
+            //     // Serial.print("DC: "); Serial.println(out_fft_buf[0]);
+            //     // Serial.print("DC+1: "); Serial.println(out_fft_buf[1]);
                 
-                float multiplier = accy;//_data.acc_mag;// - G;
-                // if (multiplier < EPS) multiplier = 0;
-                _data.speed = LEAK*_data.speed + multiplier/FS;
-                // Serial.print("multiplier: "); Serial.println(multiplier);
-                // Serial.print("SPEED: "); Serial.println(_data.speed * MPS_MPH);
-                // Serial.println();
-            }
+            //     float multiplier = accy;//_data.acc_mag;// - G;
+            //     // if (multiplier < EPS) multiplier = 0;
+            //     _data.speed = LEAK*_data.speed + multiplier/FS;
+            //     // Serial.print("multiplier: "); Serial.println(multiplier);
+            //     // Serial.print("SPEED: "); Serial.println(_data.speed * MPS_MPH);
+            //     // Serial.println();
+            // }
             _port->read(); // Checksum (not checking)
         }
     }
@@ -159,19 +159,28 @@ void WT901::set_return(output_command_t command, bool setting){
     set_config(RSW, _returncontent);
 }
 
+// void WT901::pack(byte* pack){
+//     float* p = (float*) pack;
+//     // *(p++) = (float) _data.acc.a[0] * 16 * G / (32768);
+//     // *(p++) = (float) _data.acc.a[1] * 16 * G / (32768);
+//     // *(p++) = (float) _data.acc.a[2] * 16 * G / (32768);
+//     // *(p++) = (float) _data.ang.rpy[0] * 180 / (32768);
+//     // *(p++) = (float) _data.ang.rpy[1] * 180 / (32768);
+//     // *(p++) = (float) _data.ang.rpy[2] * 180 / (32768);
+//     *(p++) = (float) _data.quat.q[0] / (32768);
+//     *(p++) = (float) _data.quat.q[1] / (32768);
+//     *(p++) = (float) _data.quat.q[2] / (32768);
+//     *(p++) = (float) _data.quat.q[3] / (32768);
+// }
+
 void WT901::pack(byte* pack){
-    float* p = (float*) pack;
-    *(p++) = (float) _data.acc.a[0] * 16 * G / (32768);
-    *(p++) = (float) _data.acc.a[1] * 16 * G / (32768);
-    *(p++) = (float) _data.acc.a[2] * 16 * G / (32768);
-    *(p++) = (float) _data.ang.rpy[0] * 180 / (32768);
-    *(p++) = (float) _data.ang.rpy[1] * 180 / (32768);
-    *(p++) = (float) _data.ang.rpy[2] * 180 / (32768);
-    *(p++) = (float) _data.quat.q[0] / (32768);
-    *(p++) = (float) _data.quat.q[1] / (32768);
-    *(p++) = (float) _data.quat.q[2] / (32768);
-    *(p++) = (float) _data.quat.q[3] / (32768);
+    int16_t* p = (int16_t*) pack;
+    *(p++) = (int16_t) (_data.quat.q[0] / (32768.0) * 10000);
+    *(p++) = (int16_t) (_data.quat.q[1] / (32768.0) * 10000);
+    *(p++) = (int16_t) (_data.quat.q[2] / (32768.0) * 10000);
+    *(p++) = (int16_t) (_data.quat.q[3] / (32768.0) * 10000);
 }
+
 void WT901::unpack(const byte* pack){
     // const float* p = (const float*) pack;
     // (this->_data).gps.latitude = *(p++);
