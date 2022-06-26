@@ -25,6 +25,7 @@ void SDComms::begin(const char* filename){
     // } else {
     // }
 
+    _is_sending_data = 0;
     if(filename == NULL){
         setSyncProvider(getTeensy3Time);
         // "YYYY-MM-DD_HH-MM-SS.bin"
