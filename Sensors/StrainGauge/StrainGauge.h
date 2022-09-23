@@ -31,8 +31,17 @@
 #ifndef STRAINGAUGE_H
 #define STRAINGAUGE_H
 
-#include "LoadCell.h"
+#include "AnalogSensor.h"
 
-using StrainGauge = LoadCell;
+class StrainGauge : public AnalogSensor<float> {
+    private:
+        float _offset;
+        float _scale = 1;
+    public:
+        void update_data();
+        void tare();
+        void set_scale(float scale);
+        float get_scale();
+};
 
 #endif
