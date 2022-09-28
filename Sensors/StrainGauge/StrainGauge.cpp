@@ -3,7 +3,7 @@
 void StrainGauge::update_data(){
 
 
-    set_data(-4*(get_voltage())/(2.1*(1+2*get_voltage()));
+    set_data(-4*(get_voltage())/(2.1*(1+2*get_voltage())));
 }
 
 void StrainGauge::tare(){
