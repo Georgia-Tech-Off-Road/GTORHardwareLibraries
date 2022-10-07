@@ -1,7 +1,7 @@
 #include "LMT87Sensor.h"
 #include "TeensyADC.h"
 #include "ClockTimer.h"
-#define TEENSY_PORT 14
+#define TEENSY_PORT 8
 
 LMT87Sensor temp;
 TeensyADC tadc;
