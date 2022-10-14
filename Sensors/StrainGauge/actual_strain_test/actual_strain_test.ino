@@ -17,7 +17,7 @@ void loop() {
   strain.update();
   if(serialTimer.ready(micros())){
     Serial.print("Strain is: ");
-    Serial.print(strain.get_data());
+    Serial.println(strain.get_data());
   }
 
 }

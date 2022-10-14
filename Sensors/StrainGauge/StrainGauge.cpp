@@ -1,9 +1,9 @@
 #include "StrainGauge.h"
 
 void StrainGauge::update_data(){
-
-
-    set_data(-4*(get_voltage())/(2.1*(1+2*get_voltage())));
+    //set_data(-4*(get_voltage())/(2.1*(1+2*get_voltage())));
+    float voltage_r = (get_voltage()-2.45)/3.3;
+    set_data((-4*voltage_r)/(2.1+(1+2*voltage_r)));
 }
 
 void StrainGauge::tare(){
