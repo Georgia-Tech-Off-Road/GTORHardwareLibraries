@@ -26,7 +26,7 @@
 
 class LMT87Sensor : public AnalogSensor<float> {
 public:
-    void update_data(float raw);
+    void update_data();
 };
 
 #endif
