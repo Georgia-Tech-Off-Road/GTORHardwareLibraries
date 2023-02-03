@@ -7,6 +7,8 @@
 
 #include "Comms.h"
 
+#define REPEAT_END_CODE 3 // How many times to repeat the end code (in case of lost bytes)
+
 /**
  * end_code_t implementation
  */
@@ -205,7 +207,11 @@ void Comms::packetize() {
             }
         }
     }
-    for(int i = 0; i < 8; ++i) _packet_send.push_back(_end_code[i]);
+    for (int i = 0; i < REPEAT_END_CODE; ++i) {
+        for(int j = 0; j < 8; ++j) {
+            _packet_send.push_back(_end_code[j]);
+        }
+    }
 
     // if need to send settings:
     // settings will be a list of id/byte_length pair.
