@@ -5,7 +5,7 @@
  */
 WirelessComms::WirelessComms(HardwareSerial &port) : 
     _port(&port),
-    _sending_period_us(500000),
+    _sending_period_us(400000),
     _settings_period_us(500000),
     _time_at_last_send(0),
     _time_at_last_read(0) { }
