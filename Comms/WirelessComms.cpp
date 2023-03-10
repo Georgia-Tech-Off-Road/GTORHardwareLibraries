@@ -55,11 +55,6 @@ void WirelessComms::send_packet() {
     uint32_t time_current = micros();
     if(abs(time_current - _time_at_last_send) >= _sending_period_us){
         packetize();
-        for (auto i : _packet_send) {
-            Serial.print(String(i, HEX));
-            Serial.print(' ');
-        }
-        Serial.println();
         _port->write(_packet_send.data(), _packet_send.size());
         _time_at_last_send = time_current;
         _packet_send.clear();
