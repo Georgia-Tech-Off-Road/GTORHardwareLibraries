@@ -68,7 +68,7 @@ void Comms::unpacketize() {
     // if 0x00, then parse settings and send settings.
 
     // ACK is the first byte of the received packet.
-    const uint8_t ack = _packet_read[0];
+    const uint8_t ack = _packet_read[0] - 0x10;
 
     // ACK IS NOT STANDARD! CHANGE TO DO SOMETHING ELSE??
     if(ack > 0x03) return; 
@@ -153,7 +153,7 @@ void Comms::unpacketize() {
  */
 
 void Comms::packetize() {
-    uint8_t ack = (0x02 & (_is_sending_data << 1)) | (0x01 & (_is_reading_data));
+    uint8_t ack = 0x10 | (_is_sending_data << 1) | _is_reading_data;
     _packet_send.push_back(ack);
     if(_is_sending_data){
         // ack should be 0x03 or 0x02
