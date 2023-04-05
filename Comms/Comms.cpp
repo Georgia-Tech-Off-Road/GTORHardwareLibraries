@@ -7,7 +7,8 @@
 
 #include "Comms.h"
 
-#define REPEAT_END_CODE 3 // How many times to repeat the end code (in case of lost bytes)
+#define REPEAT_END_CODE 2 // How many times to repeat the end code (in case of lost bytes)
+#define START_CODE 0xeee0
 
 /**
  * end_code_t implementation
@@ -67,8 +68,8 @@ void Comms::unpacketize() {
     // if 0x01, then parse settings and send data.
     // if 0x00, then parse settings and send settings.
 
-    // ACK is the first byte of the received packet.
-    const uint8_t ack = _packet_read[0] - 0x10;
+    // ACK is at the end of the 2-byte start code
+    const uint16_t ack = _packet_read[0] << 8 + _packet_read[1] - START_CODE;
 
     // ACK IS NOT STANDARD! CHANGE TO DO SOMETHING ELSE??
     if(ack > 0x03) return; 
@@ -80,10 +81,10 @@ void Comms::unpacketize() {
     _is_sending_data = sender_is_reading_data;
 
     // RECEIVING DATA
-    if(sender_is_sending_data) { 
+    if(sender_is_sending_data) {
         if(get_expected_receive_bytes() == _packet_read.size()) { // packet lengths good
-            // Skip ACK byte.
-            const uint8_t *packet_loc = _packet_read.data() + 1;
+            // Skip start code.
+            const uint8_t *packet_loc = _packet_read.data() + 2;
             for(auto it = _received_blocks.begin(); it != _received_blocks.end(); it++){
                 // Unpack each received block, and move pointer to the next block.
                 (*it)->unpack(packet_loc);
@@ -109,8 +110,8 @@ void Comms::unpacketize() {
 
         _received_blocks.clear();
 
-        // Skip ACK byte.
-        const uint8_t *packet_loc = _packet_read.data() + 1; 
+        // Skip start code.
+        const uint8_t *packet_loc = _packet_read.data() + 2; 
         // Skip end code.
         const uint8_t * const packet_end = _packet_read.data() + _packet_read.size() - 9;
 
@@ -153,8 +154,9 @@ void Comms::unpacketize() {
  */
 
 void Comms::packetize() {
-    uint8_t ack = 0x10 | (_is_sending_data << 1) | _is_reading_data;
-    _packet_send.push_back(ack);
+    uint16_t start = START_CODE | (_is_sending_data << 1) | _is_reading_data;
+    _packet_send.push_back((uint8_t) (start >> 8));
+    _packet_send.push_back((uint8_t) start);
     if(_is_sending_data){
         // ack should be 0x03 or 0x02
         for(auto it = _output_blocks.begin(); it != _output_blocks.end(); it++){
@@ -226,7 +228,7 @@ void Comms::packetize() {
 uint8_t Comms::get_expected_receive_bytes() {
     uint8_t bytes = 0;
     for(auto it = _received_blocks.begin(); it != _received_blocks.end(); it++) bytes += (*it)->get_packlen();
-    return (9 + bytes);
+    return (10 + bytes);
 }
 
 uint8_t Comms::get_expected_transmit_bytes() {
@@ -243,7 +245,7 @@ uint8_t Comms::get_expected_transmit_bytes() {
         }
     }
 
-    return (9 + bytes);
+    return (10 + bytes);
 }
 
 /*
