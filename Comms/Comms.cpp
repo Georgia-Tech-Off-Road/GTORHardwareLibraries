@@ -7,7 +7,6 @@
 
 #include "Comms.h"
 
-#define REPEAT_END_CODE 2 // How many times to repeat the end code (in case of lost bytes)
 #define START_CODE 0xeee0
 
 /**
@@ -69,7 +68,7 @@ void Comms::unpacketize() {
     // if 0x00, then parse settings and send settings.
 
     // ACK is at the end of the 2-byte start code
-    const uint16_t ack = _packet_read[0] << 8 + _packet_read[1] - START_CODE;
+    const uint16_t ack = (_packet_read[0] << 8) + _packet_read[1] - START_CODE;
 
     // ACK IS NOT STANDARD! CHANGE TO DO SOMETHING ELSE??
     if(ack > 0x03) return; 
@@ -209,10 +208,8 @@ void Comms::packetize() {
             }
         }
     }
-    for (int i = 0; i < REPEAT_END_CODE; ++i) {
-        for(int j = 0; j < 8; ++j) {
-            _packet_send.push_back(_end_code[j]);
-        }
+    for(int j = 0; j < 8; ++j) {
+        _packet_send.push_back(_end_code[j]);
     }
 
     // if need to send settings:
