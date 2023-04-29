@@ -106,12 +106,14 @@ enum block_id_t : uint16_t
 	LDS_PEDAL_MM                    = 406,	//NumBytes: 4 - This sensor probably only used for testing day 4/2/22
 
     /**
-     * 500 - IMU SENSORS
+     * 500 - MISC SENSORS
      */
 	IMU_SENSOR                      = 500,	//NumBytes: [4, 4, 4, 4, 4, 4, 4] - Accel X, Y, Z; Gyro X, Y, Z; Temp
+	TEMP_DIFF_SENSOR                = 501,  //NumBytes: 4
+	TEMP_CVT_SENSOR                 = 502,  //NumBytes: 4
 
 
-    MAX_SENSOR_NUM = 65535
+  MAX_SENSOR_NUM = 65535
 };
 
 #endif
