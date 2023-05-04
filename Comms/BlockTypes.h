@@ -117,15 +117,15 @@ typedef struct {
 template class Block<speed_sensor_data_t>;
 
 struct gps_data_t {
-    int32_t  latitude;
-    int32_t  longitude;
+    double  latitude;
+    double  longitude;
     uint32_t date;
     uint32_t time;
-    int32_t  altitude;
-    uint32_t course;
-    uint32_t speed;
+    double  altitude;
+    double course;
+    double speed;
     uint32_t satellites;
-    uint32_t hdop;
+    double hdop;
 };
 
 template class Block<gps_data_t>;

@@ -35,13 +35,17 @@ void GPSSensor::update() {
         _gps.encode(r);
         if (r == '*') { // End of a transaction, GPS gets updated.
             gps_data_t new_data;
-            _gps.get_position(&new_data.latitude, &new_data.longitude);
-            _gps.get_datetime(&new_data.date, &new_data.time);
-            new_data.altitude = _gps.altitude();
-            new_data.course = _gps.course();
-            new_data.speed = _gps.speed();
-            new_data.satellites = _gps.satellites();
-            new_data.hdop = _gps.hdop();
+            //_gps.get_position(&new_data.location.lat(), &new_data.location.lng());
+            //_gps.get_datetime(&new_data.date, &new_data.time);
+            new_data.latitude = _gps.location.lat();
+            new_data.longitude = _gps.location.lng();
+            new_data.date = _gps.date.value();
+            new_data.time = _gps.time.value();
+            new_data.altitude = _gps.altitude.meters();
+            new_data.course = _gps.course.deg();
+            new_data.speed = _gps.speed.mph();
+            new_data.satellites = _gps.satellites.value();
+            new_data.hdop = _gps.hdop.hdop();
             this->set_data(new_data);
         }
     }

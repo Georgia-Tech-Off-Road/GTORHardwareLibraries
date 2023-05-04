@@ -2,7 +2,7 @@
 #define GPSSENSOR_H
 
 #include "Block.h"
-#include "TinyGPS.h"
+#include "TinyGPSPlus.h"
 
 #define GPS_COMMS_LATITUDE   0b0000000001
 #define GPS_COMMS_LONGITUDE  0b0000000010
@@ -26,7 +26,7 @@ public:
     void pack   (uint8_t* pack);
     void unpack (const uint8_t* pack);
 private:
-    TinyGPS _gps;
+    TinyGPSPlus _gps;
     HardwareSerial& _port;
     uint16_t _comms_flags;
     void reset_packlen();

@@ -35,3 +35,7 @@
 settings.json
 *.vscode
 
+
+ArchivedLibraries/
+
+ExternalLibraries/
