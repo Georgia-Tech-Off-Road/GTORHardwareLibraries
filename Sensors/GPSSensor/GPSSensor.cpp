@@ -51,16 +51,16 @@ void GPSSensor::update() {
     }
 }
 
-uint32_t pack_double(double d) {
-  return (int) (d * 1.0e7);
+int32_t pack_double(double d) {
+  return (int32_t) (d * 1.0e7);
 }
 
-double unpack_double(uint32_t i) {
+double unpack_double(int32_t i) {
   return i / 1.0e7;
 }
 
 void GPSSensor::pack   (uint8_t* pack) {
-    uint32_t* pack_ptr = (uint32_t*) pack;
+    int32_t* pack_ptr = (int32_t*) pack;
     if(_comms_flags & GPS_COMMS_LATITUDE  ) *(pack_ptr++) = pack_double(this->_data.latitude) ;
     if(_comms_flags & GPS_COMMS_LONGITUDE ) *(pack_ptr++) = pack_double(this->_data.longitude);
     if(_comms_flags & GPS_COMMS_DATE      ) *(pack_ptr++) =             this->_data.date      ;
@@ -73,7 +73,7 @@ void GPSSensor::pack   (uint8_t* pack) {
 }
 
 void GPSSensor::unpack (const uint8_t* pack) {
-    const uint32_t* pack_ptr = (const uint32_t*) pack;
+    const int32_t* pack_ptr = (const int32_t*) pack;
     if(_comms_flags & GPS_COMMS_LATITUDE  ) this->_data.latitude   = unpack_double(*(pack_ptr++));
     if(_comms_flags & GPS_COMMS_LONGITUDE ) this->_data.longitude  = unpack_double(*(pack_ptr++));
     if(_comms_flags & GPS_COMMS_DATE      ) this->_data.date       =               *(pack_ptr++) ;
