@@ -51,28 +51,36 @@ void GPSSensor::update() {
     }
 }
 
+uint32_t pack_double(double d) {
+  return (int) (d * 1.0e7);
+}
+
+double unpack_double(uint32_t i) {
+  return i / 1.0e7;
+}
+
 void GPSSensor::pack   (uint8_t* pack) {
     uint32_t* pack_ptr = (uint32_t*) pack;
-    if(_comms_flags & GPS_COMMS_LATITUDE  ) *(pack_ptr++) = this->_data.latitude  ;
-    if(_comms_flags & GPS_COMMS_LONGITUDE ) *(pack_ptr++) = this->_data.longitude ;
-    if(_comms_flags & GPS_COMMS_DATE      ) *(pack_ptr++) = this->_data.date      ;
-    if(_comms_flags & GPS_COMMS_TIME      ) *(pack_ptr++) = this->_data.time      ;
-    if(_comms_flags & GPS_COMMS_ALTITUDE  ) *(pack_ptr++) = this->_data.altitude  ;
-    if(_comms_flags & GPS_COMMS_COURSE    ) *(pack_ptr++) = this->_data.course    ;
-    if(_comms_flags & GPS_COMMS_SPEED     ) *(pack_ptr++) = this->_data.speed     ;
-    if(_comms_flags & GPS_COMMS_SATELLITES) *(pack_ptr++) = this->_data.satellites;
-    if(_comms_flags & GPS_COMMS_HDOP      ) *(pack_ptr++) = this->_data.hdop      ;
+    if(_comms_flags & GPS_COMMS_LATITUDE  ) *(pack_ptr++) = pack_double(this->_data.latitude) ;
+    if(_comms_flags & GPS_COMMS_LONGITUDE ) *(pack_ptr++) = pack_double(this->_data.longitude);
+    if(_comms_flags & GPS_COMMS_DATE      ) *(pack_ptr++) =             this->_data.date      ;
+    if(_comms_flags & GPS_COMMS_TIME      ) *(pack_ptr++) =             this->_data.time      ;
+    if(_comms_flags & GPS_COMMS_ALTITUDE  ) *(pack_ptr++) = pack_double(this->_data.altitude );
+    if(_comms_flags & GPS_COMMS_COURSE    ) *(pack_ptr++) = pack_double(this->_data.course   );
+    if(_comms_flags & GPS_COMMS_SPEED     ) *(pack_ptr++) = pack_double(this->_data.speed    );
+    if(_comms_flags & GPS_COMMS_SATELLITES) *(pack_ptr++) =             this->_data.satellites;
+    if(_comms_flags & GPS_COMMS_HDOP      ) *(pack_ptr++) = pack_double(this->_data.hdop     );
 }
 
 void GPSSensor::unpack (const uint8_t* pack) {
     const uint32_t* pack_ptr = (const uint32_t*) pack;
-    if(_comms_flags & GPS_COMMS_LATITUDE  ) this->_data.latitude   = *(pack_ptr++);
-    if(_comms_flags & GPS_COMMS_LONGITUDE ) this->_data.longitude  = *(pack_ptr++);
-    if(_comms_flags & GPS_COMMS_DATE      ) this->_data.date       = *(pack_ptr++);
-    if(_comms_flags & GPS_COMMS_TIME      ) this->_data.time       = *(pack_ptr++);
-    if(_comms_flags & GPS_COMMS_ALTITUDE  ) this->_data.altitude   = *(pack_ptr++);
-    if(_comms_flags & GPS_COMMS_COURSE    ) this->_data.course     = *(pack_ptr++);
-    if(_comms_flags & GPS_COMMS_SPEED     ) this->_data.speed      = *(pack_ptr++);
-    if(_comms_flags & GPS_COMMS_SATELLITES) this->_data.satellites = *(pack_ptr++);
-    if(_comms_flags & GPS_COMMS_HDOP      ) this->_data.hdop       = *(pack_ptr++);
+    if(_comms_flags & GPS_COMMS_LATITUDE  ) this->_data.latitude   = unpack_double(*(pack_ptr++));
+    if(_comms_flags & GPS_COMMS_LONGITUDE ) this->_data.longitude  = unpack_double(*(pack_ptr++));
+    if(_comms_flags & GPS_COMMS_DATE      ) this->_data.date       =               *(pack_ptr++) ;
+    if(_comms_flags & GPS_COMMS_TIME      ) this->_data.time       =               *(pack_ptr++) ;
+    if(_comms_flags & GPS_COMMS_ALTITUDE  ) this->_data.altitude   = unpack_double(*(pack_ptr++));
+    if(_comms_flags & GPS_COMMS_COURSE    ) this->_data.course     = unpack_double(*(pack_ptr++));
+    if(_comms_flags & GPS_COMMS_SPEED     ) this->_data.speed      = unpack_double(*(pack_ptr++));
+    if(_comms_flags & GPS_COMMS_SATELLITES) this->_data.satellites =               *(pack_ptr++) ;
+    if(_comms_flags & GPS_COMMS_HDOP      ) this->_data.hdop       = unpack_double(*(pack_ptr++));
 }
