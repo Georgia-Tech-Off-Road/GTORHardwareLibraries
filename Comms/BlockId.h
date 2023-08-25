@@ -109,8 +109,10 @@ enum block_id_t : uint16_t
      * 500 - MISC SENSORS
      */
 	IMU_SENSOR                      = 500,	//NumBytes: [4, 4, 4, 4, 4, 4, 4] - Accel X, Y, Z; Gyro X, Y, Z; Temp
-	TEMP_DIFF_SENSOR                = 501,  //NumBytes: 4
-	TEMP_CVT_SENSOR                 = 502,  //NumBytes: 4
+	DASHBOARD_IMU_WT901				= 501,
+	DASHBOARD_IMU_WT901_TENNESSEE	= 502,
+	// TEMP_DIFF_SENSOR                = 501,  //NumBytes: 4
+	// TEMP_CVT_SENSOR                 = 502,  //NumBytes: 4
 
 
   MAX_SENSOR_NUM = 65535
