@@ -173,7 +173,20 @@ void WT901::pack(byte* pack){
     *(p++) = (float) _data.quat.q[3] / (32768);
 }
 void WT901::unpack(const byte* pack){
-    // const float* p = (const float*) pack;
-    // (this->_data).gps.latitude = *(p++);
-    // (this->_data).gps.longitude = *(p++);
+    const float* p = (const float*) pack;
+    (this->_data).acc.a[0] = (int16_t) (*(p++) * 32768 / G / 16);
+    (this->_data).acc.a[1] = (int16_t) (*(p++) * 32768 / G / 16);
+    (this->_data).acc.a[2] = (int16_t) (*(p++) * 32768 / G / 16);
+    (this->_data).acc.a[0] = (int16_t) (*(p++) * 32768 / 180);
+    (this->_data).acc.a[1] = (int16_t) (*(p++) * 32768 / 180);
+    (this->_data).acc.a[2] = (int16_t) (*(p++) * 32768 / 180);
+    (this->_data).quat.q[0] = (int16_t) (*(p++) * 32768);
+    (this->_data).quat.q[1] = (int16_t) (*(p++) * 32768);
+    (this->_data).quat.q[2] = (int16_t) (*(p++) * 32768);
+    (this->_data).quat.q[3] = (int16_t) (*(p++) * 32768);
+}
+
+void WT901::printall() {
+    Serial.printf("acc(%d, %d, %d) ", _data.acc.a[0], _data.acc.a[1], _data.acc.a[2]);
+    Serial.printf("quat(%d, %d, %d, %d)", _data.quat.q[0], _data.quat.q[1], _data.quat.q[2], _data.quat.q[3]);
 }

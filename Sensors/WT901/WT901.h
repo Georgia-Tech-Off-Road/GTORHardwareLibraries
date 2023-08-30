@@ -104,6 +104,7 @@ public:
 
     void pack  (uint8_t* pack);
     void unpack(const uint8_t* pack);
+    void printall();
 
 private:
     HardwareSerial * _port;
