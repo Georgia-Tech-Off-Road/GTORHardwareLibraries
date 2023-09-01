@@ -188,5 +188,6 @@ void WT901::unpack(const byte* pack){
 
 void WT901::printall() {
     Serial.printf("acc(%d, %d, %d) ", _data.acc.a[0], _data.acc.a[1], _data.acc.a[2]);
+    Serial.printf("ang(%d, %d, %d) ", _data.ang.rpy[0], _data.ang.rpy[1], _data.ang.rpy[2]);
     Serial.printf("quat(%d, %d, %d, %d)", _data.quat.q[0], _data.quat.q[1], _data.quat.q[2], _data.quat.q[3]);
 }
