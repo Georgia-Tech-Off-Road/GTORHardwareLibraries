@@ -177,9 +177,9 @@ void WT901::unpack(const byte* pack){
     (this->_data).acc.a[0] = (int16_t) (*(p++) * 32768 / G / 16);
     (this->_data).acc.a[1] = (int16_t) (*(p++) * 32768 / G / 16);
     (this->_data).acc.a[2] = (int16_t) (*(p++) * 32768 / G / 16);
-    (this->_data).acc.a[0] = (int16_t) (*(p++) * 32768 / 180);
-    (this->_data).acc.a[1] = (int16_t) (*(p++) * 32768 / 180);
-    (this->_data).acc.a[2] = (int16_t) (*(p++) * 32768 / 180);
+    (this->_data).ang.rpy[0] = (int16_t) (*(p++) * 32768 / 180);
+    (this->_data).ang.rpy[1] = (int16_t) (*(p++) * 32768 / 180);
+    (this->_data).ang.rpy[2] = (int16_t) (*(p++) * 32768 / 180);
     (this->_data).quat.q[0] = (int16_t) (*(p++) * 32768);
     (this->_data).quat.q[1] = (int16_t) (*(p++) * 32768);
     (this->_data).quat.q[2] = (int16_t) (*(p++) * 32768);

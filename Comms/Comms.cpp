@@ -211,6 +211,9 @@ void Comms::packetize() {
     for(int j = 0; j < 8; ++j) {
         _packet_send.push_back(_end_code[j]);
     }
+    for(int j = 0; j < 8; ++j) {
+        _packet_send.push_back(_end_code[j]);
+    }
 
     // if need to send settings:
     // settings will be a list of id/byte_length pair.
