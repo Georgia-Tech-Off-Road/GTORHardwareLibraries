@@ -14,15 +14,15 @@ void StrainGauge::update_data(){
     uint64_t youngs_modulus = 70000000000; //youngs modulus of aluminum;
     float length = 0.0125;
     float width = 0.00145;
-    float area = width * area //cross sectional area of material that gauge is on;
+    float area = width * length //cross sectional area of material that gauge is on;
     float force = strain * area * youngs_modulus;
-    set_data(force);
+    set_data(this->get_voltage());
 }
 
 void StrainGauge::tare(){
     ADC& adc = *(this->get_adc());
     adc.update_sensor(*this);
-    _offset -= this->get_data();
+    _offset = this->get_data();
 }
 
 void StrainGauge::set_scale(float scale) {

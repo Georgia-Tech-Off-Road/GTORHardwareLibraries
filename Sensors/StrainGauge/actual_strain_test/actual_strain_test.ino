@@ -1,7 +1,7 @@
 #include "StrainGauge.h"
 #include "TeensyADC.h"
 #include "ClockTimer.h"
-#define TEENSY_PORT A2 //was A0
+#define TEENSY_PORT A0 //was A2
 StrainGauge strain;
 TeensyADC tadc;
 ClockTimerf serialTimer(100);
@@ -10,6 +10,7 @@ void setup() {
   // put your setup code here, to run once:
   tadc.attach_sensor(strain, TEENSY_PORT);
   Serial.begin(115200);
+  //strain.tare();
   delay(100);
 }
 
