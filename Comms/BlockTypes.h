@@ -110,7 +110,7 @@ struct Neo6M_data_t {
 template class Block<Neo6M_data_t>;
 
 typedef struct {
-    uint32_t position;
+    int32_t position;
     uint16_t speed;
 } speed_sensor_data_t;
 
