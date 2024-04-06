@@ -76,6 +76,8 @@ enum block_id_t : uint16_t
 	SPEED_DYNOSECONDARY30_RPM       = 213,	//NumBytes: [4, 2] - Speed in RPM and position in ticks (600ppr sensor)
 	SPEED_2021CAR_ENGINE600_RPM     = 214,	//NumBytes: [4, 2] - Speed in RPM and position in ticks (600ppr sensor)
 	SPEED_2021CAR_SECONDARY30_RPM   = 215,	//NumBytes: [4, 2] - Speed in RPM and position in ticks (600ppr sensor)
+	SPEED_WHEEL_FR					= 216,
+	SPEED_WHEEL_FL					= 217,
 
     /**
      * 300 - FORCE/PRESSURE SENSORS
@@ -93,6 +95,7 @@ enum block_id_t : uint16_t
 	WHEEL_FORCE_TRANSDUCER_ANALOG_3 = 310,	//NumBytes: [4, 4, 4, 4] - AccelX, AccelY
 	FORCE_STRAINGAUGE_STRAIN        = 311,	//NumBytes: 4
 	LOADCELL_CHASSISSTIFFNESS_LBS   = 312,	//NumBytes: 4
+	PRESSURE_BRAKE_HAND_PSI			= 313,
 
     /**
      * 400 - LDS SENSORS
