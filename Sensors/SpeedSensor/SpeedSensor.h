@@ -182,7 +182,7 @@ public:
         if      (_encoder.timetickstart < _encoder.timetickend) num_ticks = _encoder.timetickend - _encoder.timetickstart;
         else if (_encoder.timetickstart > _encoder.timetickend) num_ticks = MAX_TICKVEC_SIZE + _encoder.timetickend - _encoder.timetickstart;
         
-        if (num_ticks < _encoder.ppr){
+        if (_encoder.timetickend < 600){
             rpm = _encoder.speed;
         } else {
 
