@@ -98,13 +98,14 @@ typedef struct {
     uint16_t timetickstart;
     uint16_t timetickend;
     uint32_t max_timeavg;
+    uint32_t min_pulses;
 } Encoder_internal_state_t;
 
 class SpeedSensor : public Block<speed_sensor_data_t>
 {
 public:
     // Set pin2 to 255 if it is not used
-	SpeedSensor(uint16_t ppr, uint32_t max_timeavg = DEFAULT_TIMEAVG, uint8_t flag = 2) :
+	SpeedSensor(uint16_t ppr, uint32_t min_pulses = 0, uint32_t max_timeavg = DEFAULT_TIMEAVG, uint8_t flag = 2) :
         _pin1(-1), _pin2(-1), _flag(flag) {
         _encoder.ppr = ppr;
         _encoder.prev_update_time = micros();
@@ -114,6 +115,7 @@ public:
         _encoder.timetickstart = 0;
         _encoder.timetickend = 0;
         _encoder.max_timeavg = max_timeavg;
+        _encoder.min_pulses = min_pulses;
         // memset(_encoder.timeticks, 0, 2*MAX_TICKVEC_SIZE);
 	}
 
@@ -174,15 +176,15 @@ public:
     }    
     inline uint16_t get_speed(){
         noInterrupts();
-        uint16_t rpm = 0;
-        while (abs(_encoder.timeticks[_encoder.timetickend] - _encoder.timeticks[_encoder.timetickstart]) > _encoder.max_timeavg) {
-            if(++(_encoder.timetickstart) >= MAX_TICKVEC_SIZE) _encoder.timetickstart = 0;
-        }
+        uint16_t rpm = _encoder.speed;
+        // while (abs(_encoder.timeticks[_encoder.timetickend] - _encoder.timeticks[_encoder.timetickstart]) > _encoder.max_timeavg) {
+        //     if(++(_encoder.timetickstart) >= MAX_TICKVEC_SIZE) _encoder.timetickstart = 0;
+        // }
         float num_ticks = 0;
         if      (_encoder.timetickstart < _encoder.timetickend) num_ticks = _encoder.timetickend - _encoder.timetickstart;
         else if (_encoder.timetickstart > _encoder.timetickend) num_ticks = MAX_TICKVEC_SIZE + _encoder.timetickend - _encoder.timetickstart;
         
-        if (_encoder.timetickend < 600){
+        if (_encoder.timetickend < _encoder.min_pulses){
             rpm = _encoder.speed;
         } else {
 
