@@ -177,9 +177,12 @@ public:
     inline uint16_t get_speed(){
         noInterrupts();
         uint16_t rpm = _encoder.speed;
-        // while (abs(_encoder.timeticks[_encoder.timetickend] - _encoder.timeticks[_encoder.timetickstart]) > _encoder.max_timeavg) {
-        //     if(++(_encoder.timetickstart) >= MAX_TICKVEC_SIZE) _encoder.timetickstart = 0;
-        // }
+        if ( _encoder.min_pulses == 0) {
+            while (abs(_encoder.timeticks[_encoder.timetickend] - _encoder.timeticks[_encoder.timetickstart]) > _encoder.max_timeavg) {
+                if(++(_encoder.timetickstart) >= MAX_TICKVEC_SIZE) _encoder.timetickstart = 0;
+            }
+        }
+        
         float num_ticks = 0;
         if      (_encoder.timetickstart < _encoder.timetickend) num_ticks = _encoder.timetickend - _encoder.timetickstart;
         else if (_encoder.timetickstart > _encoder.timetickend) num_ticks = MAX_TICKVEC_SIZE + _encoder.timetickend - _encoder.timetickstart;
@@ -191,7 +194,7 @@ public:
             float f_speed = 60.0*1000.0*1000.0 * (float)num_ticks / (float)(abs(_encoder.timeticks[_encoder.timetickend] - _encoder.timeticks[_encoder.timetickstart]) * _encoder.ppr);
             _encoder.speed = (uint16_t)f_speed;
 
-            uint16_t rpm = _encoder.speed;
+            rpm = _encoder.speed;
             if(abs(micros() - _encoder.timeticks[_encoder.timetickend]) > _encoder.max_timeavg) {
                 float f_rpm = 60.0*1000.0*1000.0 / (float)(abs(micros() - _encoder.timeticks[_encoder.timetickend]) * _encoder.ppr);
                 // rpm = (uint16_t) f_rpm;
